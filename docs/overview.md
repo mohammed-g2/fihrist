@@ -111,3 +111,5 @@
 - owners can add css theme to the blog
 - post can have multiple images
 - featured images section
+- activity page for user (blog limited)
+- activity page for admin (website)
