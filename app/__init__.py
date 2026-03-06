@@ -19,12 +19,12 @@ def create_app(config_name):
     migrate.init_app(app, db)
     
   with app.app_context():
-    # import models
-    pass
+    from app.models import User
+    
   
-  @app.context_processor
-  def create_template_context():
-    return dict()
+    @app.context_processor
+    def create_template_context():
+      return dict(db=db, User=User)
   
   
   from app.blueprints import (
