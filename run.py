@@ -1,4 +1,9 @@
+import os
+from dotenv import load_dotenv
 from app import create_app
+from config import basedir
 
 
-app = create_app()
+load_dotenv(os.path.join(basedir, '.env'))
+
+app = create_app('development')

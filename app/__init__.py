@@ -1,8 +1,30 @@
 from flask import Flask
+from app.ext import db, migrate, mail, csrf, babel
+from config import options
 
-
-def create_app():
+def create_app(config_name):
+  conf = options[config_name]
+  
   app = Flask(__name__)
+  
+  app.config.from_object(conf)
+  conf.init_app(app)
+  
+  db.init_app(app)
+  mail.init_app(app)
+  csrf.init_app(app)
+  babel.init_app(app)
+  
+  if app.config.get('ENV') != 'production':
+    migrate.init_app(app, db)
+    
+  with app.app_context():
+    # import models
+    pass
+  
+  @app.context_processor
+  def create_template_context():
+    return dict()
   
   
   from app.blueprints import (
