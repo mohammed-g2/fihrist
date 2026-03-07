@@ -3,7 +3,15 @@ import click
 from flask import Flask
 
 
-def init_cli(app: Flask):
+def init_cli(app: Flask) -> None:
+  """
+  Initialize cli, commands added:
+  - <init> initialize the application
+  - <translate init|update|compile> translation commands
+  
+  :param app: application instance
+  """
+  
   @app.cli.command()
   def init():
     """Initialize the application."""
@@ -18,11 +26,12 @@ def init_cli(app: Flask):
     """Translation commands."""
   
   @translate.command()
-  def init():
+  @click.argument('lang')
+  def init(lang):
     """Initialize language."""
     if os.system('pybabel extract -F babel.cfg -k _l -o messages.pot .'):
       raise RuntimeError('Extracting "messages.pot" failed.')
-    if os.system('pybabel init -i messages.pot -d app/translations -l ar'):
+    if os.system('pybabel init -i messages.pot -d app/translations -l ' + lang):
       raise RuntimeError('Initializing language failed.')
     os.remove('messages.pot')
     print('> Language initialized.')
