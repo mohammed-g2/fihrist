@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang={{ _locale }} dir={{ _dir }}>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,7 +7,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='assets/favicon-32x32.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='assets/favicon-16x16.png') }}">
     <link rel="manifest" href="{{ url_for('static', filename='assets/site.webmanifest') }}">
-    <title>Fihrist - {% block title%}{% endblock %}</title>
+    <title>{{ _('Fihrist') }} - {% block title%}{% endblock %}</title>
     {% block head %}
     <!-- Third-party CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='node_modules/bootstrap/dist/css/bootstrap.min.css') }}">
@@ -17,10 +17,46 @@
     {% endblock %}
   </head>
   <body>
-    {% block content %}
-    {% endblock %}
+    <!-- START Header -->
+    <header>
+      <!-- START Flashed Messages -->
+      <div class="alert-box m-0 p-0">
+        {% for category, message in get_flashed_messages(with_categories=True) %}
+          {# if no category is provided. default to 'warning' #}
+          {% if category == 'message' %}
+            {% set category = 'warning' %}
+          {% endif %}
+          <div class="alert alert-{{category}} alert-dismissible fade show" role="alert">
+            <span>{{ message }}</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      </div>
+      <!-- END Flashed Messages -->
+      
+      <!-- START Navbar -->
+      {% include 'includes/navbar.html' %}
+      <!-- END Navbar -->
+    </header>
+    <!-- END Header -->
     
-    {% block js %}
+    
+    <!-- START Main Content -->
+    <main>
+      {% block content %}
+      {% endblock %}
+    </main>
+    <!-- END Main Content -->
+    
+    <!-- START FOOTER -->
+    <footer class="text-center p-3">
+      <div class="container">
+        {{ _('All Rights Reserved &copy; 2026.') }}
+      </div>
+    </footer>
+    <!-- END FOOTER -->
+    
+    
     <!-- Third-party JavaScript -->
     <script src="{{ url_for('static', filename='node_modules/htmx.org/dist/htmx.min.js') }}"></script>
     <script src="{{ url_for('static', filename='node_modules/@popperjs/core/dist/umd/popper.min.js') }}"></script>
@@ -28,6 +64,7 @@
     <script src="{{ url_for('static', filename='node_modules/dayjs/dayjs.min.js') }}"></script>
     <!-- App JavaScript -->
     <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+    {% block js %}
     {% endblock %}
   </body>
 </html>

@@ -4,18 +4,25 @@ from app.ext import (
   get_locale)
 from config import options
 
-def create_app(config_name):
+def create_app(config_name: str) -> Flask:
+  """
+  Create and configure the application.
+  
+  :param config_name: configuration choosen from config.options
+  :returns: application instance
+  """
   conf = options[config_name]
   
   app = Flask(__name__)
   
   app.config.from_object(conf)
   conf.init_app(app)
+  locale_selector = get_locale(app.config['LANGUAGES'])
   
   db.init_app(app)
   mail.init_app(app)
   csrf.init_app(app)
-  babel.init_app(app, locale_selector=get_locale(app))
+  babel.init_app(app, locale_selector=locale_selector)
   login_manager.init_app(app)
   init_flask_login()
   
@@ -28,7 +35,12 @@ def create_app(config_name):
   
     @app.context_processor
     def create_template_context():
-      return dict(db=db, User=User)
+      _locale = locale_selector()
+      if 'ar' in _locale:
+        _dir = 'rtl'
+      else:
+        _dir = 'ltr'
+      return dict(_locale=_locale, _dir=_dir)
   
   
   from app.blueprints import (

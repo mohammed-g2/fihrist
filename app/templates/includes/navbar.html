@@ -1,0 +1,58 @@
+<nav class="navbar navbar-expand-lg bg-primary navbar-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand text-white" href="{{ url_for('main.index') }}">
+      {{ _('Fihrist') }}
+    </a>
+    <button 
+        class="navbar-toggler text-white" 
+        type="button" 
+        data-bs-toggle="collapse" 
+        data-bs-target="#navbarContent" 
+        aria-controls="navbarContent" 
+        aria-expanded="false" 
+        aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link text-white" href="#">Link</a>
+        </li>
+        
+        <li class="nav-item dropdown">
+          <a 
+              class="nav-link dropdown-toggle text-white" 
+              href="#" 
+              role="button" 
+              data-bs-toggle="dropdown" 
+              aria-expanded="false">
+            <i class="bi bi-person-circle fs-5 icon"></i>
+          </a>
+          <ul class="dropdown-menu">
+            <li>
+              <a class="dropdown-item" href="{{ url_for('auth.login') }}">
+                {{ _('Login') }}
+              </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            {% if 'en' in _locale %}
+            <li>
+              <a class="dropdown-item" href="{{ url_for('main.set_language', lang='ar', next=url_for(request.endpoint)) }}">
+                <i class="bi bi-translate"></i>
+                {{ _('Translate') }}
+              </a>
+            </li>
+            {% elif 'ar' in _locale %}
+            <li>
+              <a class="dropdown-item" href="{{ url_for('main.set_language', lang='en', next=url_for(request.endpoint)) }}"> 
+                <i class="bi bi-translate"></i>
+                {{ _('Translate') }}
+              </a>
+            </li>
+            {% endif %}
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

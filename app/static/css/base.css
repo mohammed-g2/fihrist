@@ -21,13 +21,13 @@ body {
 }
 
 a {
-  color: var(--link) !important;
+  color: var(--link);
 }
 a:hover {
-  color: var(--link-hover) !important;
+  color: var(--link-hover);
 }
 a:active {
-  color: var(--link-hover) !important;
+  color: var(--link-hover);
 }
 
 .alert-box {
