@@ -1,5 +1,7 @@
 from flask import Flask
-from app.ext import db, migrate, mail, csrf, babel
+from app.ext import (
+  db, migrate, mail, csrf, babel, login_manager, init_flask_login, 
+  get_locale)
 from config import options
 
 def create_app(config_name):
@@ -13,11 +15,13 @@ def create_app(config_name):
   db.init_app(app)
   mail.init_app(app)
   csrf.init_app(app)
-  babel.init_app(app)
+  babel.init_app(app, locale_selector=get_locale(app))
+  login_manager.init_app(app)
+  init_flask_login()
   
   if app.config.get('ENV') != 'production':
     migrate.init_app(app, db)
-    
+  
   with app.app_context():
     from app.models import User
     
