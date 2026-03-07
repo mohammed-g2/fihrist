@@ -1,4 +1,173 @@
+:root {
+  --primary-action: #1B263B; /* Deep ink - Buttons, Headers, Sidebar. */
+  --primary-hover: #0D1B2A;
+  --primary-active: #0B121E;
+  /* Slate blue - Secondary buttons (Cancel, Draft) */
+  --secobdary-action: #415A77; 
+  --secondary-hover: #778DA9;
+  --link: #1B263B; /* Blue */
+  --link-hover: #344EAD;
+  --alert: #C29958; /* Gold -  (Publish, Upgrade, Delete) */
+  --background: #FDFDFB; /* White - Main background */
+  --background-alt: #E0E1DD; /* Cloud - Sidebar, Table headers */
+}
 
 body {
-  background-color: gray;
+  background-color: var(--background);
+  min-height: 100vh;
+  display: grid;
+  /* Header: auto height, Main: 1fr - fills space, Footer: auto height */
+  grid-template-rows: auto 1fr auto;
+}
+
+a {
+  color: var(--link) !important;
+}
+a:hover {
+  color: var(--link-hover) !important;
+}
+a:active {
+  color: var(--link-hover) !important;
+}
+
+.alert-box {
+  position: fixed;
+  top: 8px;
+  z-index: 1100;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.alert-box > .alert {
+  width: 50%;
+}
+
+.icon {
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+  display: inline-flex;
+  vertical-align: middle;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  margin-top: -3px;
+}
+
+/* START Custom checkbox */
+.form-check-input.cb-lg {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-top: 0.15rem; /* Alignment tweak */
+    cursor: pointer;
+}
+/* 2. Color Overrides*/
+.form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+.form-check-input:focus {
+    border-color: var(--primary-hover);
+    box-shadow: 0 0 0 0.25rem var(--primary-active);
+}
+.form-check-input:active {
+    filter: brightness(90%);
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
+}
+/* END Custom checkbox */
+
+/* START Custom Backgrounds */
+.bg-primary {
+  background-color: var(--primary-action) !important;
+  color: #FFFFFF !important;
+}
+
+.bg-secondary {
+  background-color: var(--secobdary-action) !important;
+  color: #FFFFFF !important;
+}
+.bg-alert {
+  background-color: var(--alert) !important;
+  color: #000000 !important;
+}
+/* END Custom Backgrounds */
+
+/* START Custom Buttons */
+.btn-primary {
+  background-color: var(--primary-action) !important;
+  color: #FFFFFF !important;
+}
+.btn-primary:hover {
+  background-color: var(--primary-hover) !important;
+  color: #FFFFFF !important;
+}
+.btn-primary:active {
+  background-color: var(--primary-active) !important;
+  color: #FFFFFF !important;
+}
+
+.btn-secondary {
+  background-color: var(--secobdary-action) !important;
+  color: #FFFFFF !important;
+}
+.btn-secondary:hover {
+  background-color: var(--secobdary-hover) !important;
+  color: #FFFFFF !important;
+}
+.btn-secondary:active {
+  background-color: var(--secobdary-active) !important;
+  color: #FFFFFF !important;
+}
+
+.btn-alert {
+  background-color: var(--alert) !important;
+  color: #000000 !important;
+}
+/* END Custom Buttons */
+
+/* Small devices (phones, 380px and up) */
+@media (min-width: 380px) {
+  .alert-box > .alert {
+    width: 100%;
+  }
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) {
+  .alert-box > .alert {
+    width: 100%;
+  }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+  .alert-box > .alert {
+    width: 75%;
+  }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+  .alert-box > .alert {
+    width: 50%;
+  }
+}
+
+/* X-Large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+  .alert-box > .alert {
+    width: 50%;
+  }
+}
+
+/* XX-Large devices (larger desktops, 1400px and up) */
+@media (min-width: 1400px) {
+  .alert-box > .alert {
+    width: 50%;
+  }
 }
