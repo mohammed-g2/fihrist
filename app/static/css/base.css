@@ -67,12 +67,12 @@ a:active {
 }
 /* 2. Color Overrides*/
 .form-check-input:checked {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
+    background-color: var(--primary-action) !important;
+    border-color: var(--primary-action) !important;
 }
 .form-check-input:focus {
-    border-color: var(--primary-hover);
-    box-shadow: 0 0 0 0.25rem var(--primary-active);
+    border-color: var(--primary-hover) !important;
+    border: 2px solid var(--primary-active) !important;
 }
 .form-check-input:active {
     filter: brightness(90%);
@@ -82,12 +82,12 @@ a:active {
 /* END Custom checkbox */
 
 /* START Custom Backgrounds */
-.bg-primary {
+.bg-ink {
   background-color: var(--primary-action) !important;
   color: #FFFFFF !important;
 }
 
-.bg-secondary {
+.bg-slate {
   background-color: var(--secobdary-action) !important;
   color: #FFFFFF !important;
 }
@@ -98,29 +98,35 @@ a:active {
 /* END Custom Backgrounds */
 
 /* START Custom Buttons */
-.btn-primary {
+.btn-ink {
   background-color: var(--primary-action) !important;
+  border-color: var(--primary-action) !important;
   color: #FFFFFF !important;
 }
-.btn-primary:hover {
+.btn-ink:hover {
   background-color: var(--primary-hover) !important;
+  border-color: var(--primary-action) !important;
   color: #FFFFFF !important;
 }
-.btn-primary:active {
+.btn-ink:active {
   background-color: var(--primary-active) !important;
+  border-color: var(--primary-action) !important;
   color: #FFFFFF !important;
 }
 
-.btn-secondary {
+.btn-slate {
   background-color: var(--secobdary-action) !important;
+  border-color: var(--secobdary-action) !important;
   color: #FFFFFF !important;
 }
-.btn-secondary:hover {
+.btn-slate:hover {
   background-color: var(--secobdary-hover) !important;
+  border-color: var(--secobdary-action) !important;
   color: #FFFFFF !important;
 }
-.btn-secondary:active {
+.btn-slate:active {
   background-color: var(--secobdary-active) !important;
+  border-color: var(--secobdary-action) !important;
   color: #FFFFFF !important;
 }
 
