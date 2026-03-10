@@ -3,11 +3,51 @@
 {% block title %}{{ _('Homepage') }}{% endblock %}
 
 {% block head %}
-{{ super() }}
+  {{ super() }}
 {% endblock %}
 
 {% block content %}
-<div>
-  <h1>{{ _('Fihrist') }}</h1>
+<div class="container pt-4">
+  <div class="row">
+    
+    <div class="col-lg-8 col-12">
+      <h2 class="pb-2">{{ _('Latest Articles') }}</h2>
+      <div class="card mb-3" style="max-width: 100%">
+      <div class="row g-0">
+        <div class="col-md-4">
+          <img src="..." class="img-fluid rounded-start" alt="...">
+        </div>
+        <div class="col-md-8">
+          <div class="card-body">
+            <h5 class="card-title">Card title</h5>
+            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+            <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    </div>
+    
+    <div class="col-lg-4 col-12">
+      
+      <div class="border rounded-2 overflow-hidden">
+        <div class="card border-0 rounded-0">
+          <h4 class="p-2 ps-3 pt-3">{{ _('Featured') }}</h4>
+          <hr class="m-auto" style="margin:0; width:75%;">
+          
+          <div class="card-body">
+            <h5 class="card-title">Card title</h5>
+            <h6 class="card-subtitle mb-2 text-body-secondary">Card subtitle</h6>
+            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
+            <a href="#" class="card-link">Card link</a>
+            <a href="#" class="card-link">Another link</a>
+          </div>
+        </div>
+        <hr class="m-auto" style="margin:0; width:75%;">
+      </div>
+      
+    </div>
+  </div>
 </div>
 {% endblock %}
