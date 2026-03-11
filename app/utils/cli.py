@@ -8,6 +8,7 @@ def init_cli(app: Flask) -> None:
   Initialize cli, commands added:
   - <init> initialize the application
   - <translate init|update|compile> translation commands
+  - <test> run unit tests
   
   :param app: application instance
   """
@@ -20,7 +21,14 @@ def init_cli(app: Flask) -> None:
     print('> Created data directory.')
     os.makedirs(os.path.join(basedir, 'tmp'), exist_ok=True)
     print('> Created temporary directory.')
-    
+  
+  @app.cli.command()
+  def test():
+    """Run unit tests."""
+    import unittest
+    tests = unittest.TestLoader().discover('tests')
+    unittest.TextTestRunner(verbosity=2).run(tests)
+  
   @app.cli.group()
   def translate():
     """Translation commands."""
