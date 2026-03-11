@@ -7,11 +7,13 @@ def index():
   return render_template('index.html')
 
 
-@main_bp.route('/<lang>')
+@main_bp.route('/translate/<lang>')
 def set_language(lang):
   session['LANGUAGE'] = lang
   url = request.args.get('next')
   if url and not url.startswith('/'):
     url = url_for('main.index')
+  else:
+    url = '/'
 
   return redirect(url)

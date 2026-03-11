@@ -44,10 +44,8 @@ def get_locale(languages: list) -> str:
   """
   def inner():
     default = 'en'
-    request_lang = request.accept_languages.best_match(languages)
-    if session and session.get('LANGUAGE') in languages:
-      default = session.get('LANGUAGE')
-    elif request_lang:
-      default = request_lang
+    if session:
+      if session.get('LANGUAGE') in languages:
+        default = session.get('LANGUAGE')
     return default
   return inner 

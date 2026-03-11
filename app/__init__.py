@@ -32,7 +32,6 @@ def create_app(config_name: str) -> Flask:
   
   with app.app_context():
     from app.models import User
-    
   
     @app.context_processor
     def create_template_context():
