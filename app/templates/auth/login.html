@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% from 'includes/macros.html' import form_field, form_checkbox %}
 
 {% block title %}{{ _('Login') }}{% endblock %}
 
@@ -10,29 +11,31 @@
         {{ _('Login') }}
         <hr class="w-50 mx-auto">
       </h2>
-      <form>
+      <form method="post">
+        {{ form.hidden_tag() }}
+        
         <div class="mb-3">
-          <label for="email" class="form-label">Email address</label>
-          <input type="email" class="form-control" id="email">
+          {{ form_field(form.email, id='email') }}
         </div>
+        
         <div class="mb-3">
-          <label for="password" class="form-label">Password</label>
-          <input type="password" class="form-control" id="password">
+          {{ form_field(form.password, id='password') }}
         </div>
+        
         <div class="d-flex justify-content-between">
-          <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" id="remember-me">
-            <label class="form-check-label" for="remember-me">Remember me</label>
-          </div>
+            {{ form_checkbox(form.remember_me, id='remember-me', label=form.remember_me.label.text) }}
           <p><a href="#">Forgot Password?</a></p>
         </div>
         
         <div class="d-grid col-12 mx-auto">
-          <button type="submit" class="btn btn-ink py-2">Login</button>
+          {{ form.submit(class='btn btn-ink py-2') }}
         </div>
+        
       </form>
+      
       <p class="mt-5 text-center text-secondary fw-bold">Don't have an account? <a href="{{ url_for('auth.register') }}">Create one here</a></p>
     </div>
+    
     <div class="p-0 col-lg-6 d-lg-block d-none">
       <img class="w-100 vh-100" src="{{ url_for('static', filename='assets/bookshelf.jpeg') }}">
     </div>

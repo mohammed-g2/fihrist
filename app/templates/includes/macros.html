@@ -1,0 +1,33 @@
+{% macro form_field(field, id, aria_describedby=None) %}
+  <label for={{ id }} class="form-label">{{ field.label }}</label>
+
+  {% if field.errors %}
+    {{ field(class='form-control is-invalid', id=id, aria_describedby=aria_describedby, **kwargs) }}
+    
+    {% for error in field.errors %}
+      <div  class="invalid-feedback">{{ error }}</div>
+    {% endfor %}
+  {% else %}
+    {{ field(class='form-control', id=id, aria_describedby=aria_describedby, **kwargs) }}
+  {% endif %}
+{% endmacro %}
+
+{% macro form_checkbox(field, id, label) %}
+  {% if field.errors %}
+    <div class="mb-3 form-check is-invalid">
+      {{ field(class='form-check-input', id=id) }}
+      
+      <label class="form-check-label" for={{ id }}>
+        {{ label }}
+      </label>
+    </div>
+  {% else %}
+    <div class="mb-3 form-check">
+      {{ field(class='form-check-input', id=id) }}
+      
+      <label class="form-check-label" for={{ id }}>
+        {{ label }}
+      </label>
+    </div>
+  {% endif %}
+{% endmacro %}

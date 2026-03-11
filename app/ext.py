@@ -43,12 +43,11 @@ def get_locale(languages: list) -> str:
   :returns: locale string
   """
   def inner():
-    locale = None
-    if session and 'ar' in session.get('LANGUAGE'):
-      locale = 'ar'
-    elif session and 'en' in session.get('LANGUAGE'):
-      locale = 'en'
-    else:
-      locale = request.accept_languages.best_match(languages)
-    return locale
+    default = 'en'
+    request_lang = request.accept_languages.best_match(languages)
+    if session and session.get('LANGUAGE') in languages:
+      default = session.get('LANGUAGE')
+    elif request_lang:
+      default = request_lang
+    return default
   return inner 

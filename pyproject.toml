@@ -5,6 +5,7 @@ description = "A multi-tenant CMS"
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
+    "email-validator>=2.3.0",
     "flask>=3.0.3",
     "flask-babel>=4.0.0",
     "flask-login>=0.6.3",

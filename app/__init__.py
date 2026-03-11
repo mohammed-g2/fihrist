@@ -4,6 +4,7 @@ from app.ext import (
   get_locale)
 from config import options
 
+
 def create_app(config_name: str) -> Flask:
   """
   Create and configure the application.

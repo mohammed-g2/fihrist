@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% from 'includes/macros.html' import form_field, form_checkbox %}
 {% block title %}{{ _('Register') }}{% endblock %}
 
 {% block content %}
@@ -10,36 +10,51 @@
         {{ _('Sign Up') }}
         <hr class="w-50 mx-auto">
       </h2>
-      <form>
+      <form method="post">
+        
+        {{ form.hidden_tag() }}
+        
         <div class="mb-3">
-          <label for="username" class="form-label">Username</label>
-          <input type="text" class="form-control" id="username" aria-describedby="username-help">
-        </div>
-        <div class="mb-3">
-          <label for="email" class="form-label">Email address</label>
-          <input type="email" class="form-control" id="email">
-        </div>
-        <div class="mb-3">
-          <label for="password" class="form-label">Password</label>
-          <input type="password" class="form-control" id="password" aria-describedby="password-help">
-        </div>
-        <div class="mb-3">
-          <label for="confirm-password" class="form-label">Confirm Password</label>
-          <input type="password" class="form-control" id="confirm-password">
-        </div>
-        <div class="d-flex justify-content-between">
-          <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" id="terms">
-            <label class="form-check-label" for="terms">I Agree on <a href="#">Terms & Conditions</a></label>
+          {{ form_field(form.username, id='username', aria_describedby='username-help') }}
+          <div id="username-help" class="form-text">
+            {{ _('Username must have only letters, numbers, dots or underscores.') }}
           </div>
-          <p><a href="#">Forgot Password?</a></p>
+        </div>
+        
+        <div class="mb-3">
+          {{ form_field(form.email, id='email') }}
+        </div>
+        
+        <div class="mb-3">
+          {{ form_field(form.password, id='password', aria_describedby='password-help') }}
+          <div id="password-help" class="form-text">
+            {{ _('Password must be 6 characters long, contain one number and one symbol.') }}
+          </div>
+        </div>
+        
+        <div class="mb-3">
+          {{ form_field(form.confirm_password, id='confirm-password') }}
+        </div>
+        
+        <div>
+          {% 
+            set terms_text =
+            _('I Agree on') 
+            + ' <a href="url">'|replace('url', url_for('main.index'))|safe
+            + _('Terms & Conditions')
+            + '</a>'|safe
+          %}
+          {{ form_checkbox(form.terms, id='terms', label=terms_text) }}
         </div>
         
         <div class="d-grid col-12 mx-auto">
-          <button type="submit" class="btn btn-ink py-2">Sign Up</button>
+          {{ form.submit(class='btn btn-ink py-2') }}
         </div>
       </form>
-      <p class="mt-5 text-center text-secondary fw-bold">Already have an account? <a href="{{ url_for('auth.login') }}">Login here</a></p>
+      <p class="mt-5 text-center text-secondary fw-bold">
+        {{ _('Already have an account?') }} 
+        <a href="{{ url_for('auth.login') }}">{{ _('Login here') }}</a>
+      </p>
     </div>
     <div class="p-0 col-lg-6 d-lg-block d-none">
       <img class="w-100 vh-100" src="{{ url_for('static', filename='assets/bookshelf.jpeg') }}">

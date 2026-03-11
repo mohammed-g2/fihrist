@@ -60,3 +60,12 @@ def init_cli(app: Flask) -> None:
     if os.system('pybabel compile -d app/translations'):
       raise RuntimeError('Compiling language failed.')
     print('> Translation compiled.')
+
+
+def create_shell_context(app: Flask) -> None:
+  """Create shell context with database models available."""
+  @app.shell_context_processor
+  def shell_context():
+    from app.ext import db
+    from app.models import User
+    return dict(db=db, User=User)

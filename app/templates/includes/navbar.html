@@ -41,7 +41,18 @@
               </a>
             </li>
             {% else %}
-            
+            <li>
+              <a class="dropdown-item" href="{{ url_for('auth.login') }}">
+                <i class="bi bi-gear-fill icon"></i>
+                {{ _('Settings') }}
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{{ url_for('auth.logout') }}">
+                <i class="bi bi-box-arrow-left icon"></i> 
+                {{ _('Logout') }}
+              </a>
+            </li>
             {% endif %}
             <li><hr class="dropdown-divider"></li>
             {% if 'en' in _locale %}
