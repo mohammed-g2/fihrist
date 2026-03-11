@@ -42,7 +42,7 @@
             </li>
             {% else %}
             <li>
-              <a class="dropdown-item" href="{{ url_for('auth.login') }}">
+              <a class="dropdown-item" href="#">
                 <i class="bi bi-gear-fill icon"></i>
                 {{ _('Settings') }}
               </a>
@@ -55,16 +55,16 @@
             </li>
             {% endif %}
             <li><hr class="dropdown-divider"></li>
-            {% if 'en' in _locale %}
+            {% if _locale == 'en' %}
             <li>
-              <a class="dropdown-item" href="{{ url_for('main.set_language', lang='ar', next=url_for(request.endpoint)) }}">
+              <a class="dropdown-item" href="{{ url_for('main.set_language', lang='ar', next=url_for(request.endpoint or 'main.index')) }}">
                 <i class="bi bi-translate"></i>
                 {{ _('Translate') }}
               </a>
             </li>
-            {% elif 'ar' in _locale %}
+            {% elif _locale == 'ar' %}
             <li>
-              <a class="dropdown-item" href="{{ url_for('main.set_language', lang='en', next=url_for(request.endpoint)) }}"> 
+              <a class="dropdown-item" href="{{ url_for('main.set_language', lang='en', next=url_for(request.endpoint or 'main.index')) }}"> 
                 <i class="bi bi-translate"></i>
                 {{ _('Translate') }}
               </a>

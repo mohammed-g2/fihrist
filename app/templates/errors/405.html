@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ _('Internal Server Error') }}{% endblock %}
+{% block title %}{{ _('Method Not Allowed') }}{% endblock %}
 
 {% block content %}
 <div class="container">
   <div class="mt-5">
-    <h1>{{ _('Internal Server Error') }}</h1>
-    <p>500</p>
+    <h1>{{ _('Method Not Allowed') }}</h1>
+    <p>405</p>
     <p><a href="{{ url_for('main.index') }}">{{ _('Back') }}</a></p>
   </div>
 </div>
