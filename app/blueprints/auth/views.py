@@ -1,13 +1,12 @@
 from flask import render_template, redirect, url_for, current_app, flash
-from flask_login import current_user, login_user, logout_user
+from flask_login import current_user, login_user, logout_user, login_required
 from flask_babel import _
-from app.services import AuthenticationService
+from app.services import AuthenticationService, EmailService
 from app.errors import (
   LoginError, UsernameAlreadyExistsError, EmailAlreadyExistsError,
   DatabaseCommitError, InvalidPasswordError, InvalidUsernameError)
 from . import auth_bp
 from .forms import LoginForm, RegisterForm
-
 
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
@@ -30,9 +29,9 @@ def login():
 
 
 @auth_bp.route('/logout')
+@login_required
 def logout():
-  if current_user.is_authenticated:
-    logout_user()
+  logout_user()
   return redirect(url_for('main.index'))
 
 
@@ -45,14 +44,13 @@ def register():
   srv = AuthenticationService
   
   if form.validate_on_submit():
-    current_app.logger.error('*' * 20 + 'Submited' + '*' * 20)
     try:
       srv.register_user(
         username=form.username.data,
         email=form.email.data,
         password=form.password.data)
       flash(_('You can login now.'), category='info')
-      redirect(url_for('main.index'))
+      return redirect(url_for('auth.login'))
     except UsernameAlreadyExistsError:
       form.username.errors.append(_('Username already exists.'))
     except EmailAlreadyExistsError:
@@ -62,7 +60,32 @@ def register():
     except InvalidUsernameError:
       form.username.errors.append(_('Invalid username'))
     except Exception as e:
-      flash(e)
-      flash(_('Something went wrong, please try again later.'))
+      flash(_('Something went wrong, please try again later.'), category='warning')
 
   return render_template('auth/register.html', form=form)
+
+
+@auth_bp.route('/confirm-account/<token>')
+@login_required
+def confirm(token):
+  srv = AuthenticationService
+  try:
+    srv.confirm_user(current_user, token)
+    flash(_('Account Confirmed.'), category='info')
+  except Exception as e:
+    flash(_('Something went wrong, please try again later.'), category='warning')
+    
+  return redirect(url_for('main.index'))
+
+
+@auth_bp.route('/confirm-account')
+@login_required
+def request_confirmation_email():
+  srv = EmailService
+  try:
+    srv.send_email(user=current_user, email_type='confirm_account')
+    flash(_('A new confirmation email has been sent. Please check your inbox.'))
+  except Exception as e:
+    flash(_('Something went wrong, please try again later.'), category='warning')
+
+  return redirect(url_for('user.settings'))

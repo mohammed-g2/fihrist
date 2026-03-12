@@ -9,6 +9,7 @@ class User(db.Model, UserMixin):
   username = db.Column(db.String(64), unique=True, index=True)
   email = db.Column(db.String(64), unique=True, index=True)
   password_hash = db.Column(db.String)
+  confirmed = db.Column(db.Boolean(), default=False)
   
   def __repr__(self):
     return f'<User { self.username }>'

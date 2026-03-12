@@ -95,7 +95,7 @@ a:active {
 }
 .bg-alert {
   background-color: var(--alert) !important;
-  color: #000000 !important;
+  color: #FFFFFF !important;
 }
 /* END Custom Backgrounds */
 

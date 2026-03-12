@@ -42,7 +42,7 @@
             </li>
             {% else %}
             <li>
-              <a class="dropdown-item" href="#">
+              <a class="dropdown-item" href="{{ url_for('user.settings') }}">
                 <i class="bi bi-gear-fill icon"></i>
                 {{ _('Settings') }}
               </a>

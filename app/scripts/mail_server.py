@@ -1,6 +1,7 @@
-# Email server for testing purposes
 import time
 from aiosmtpd.controller import Controller
+
+# Email server for testing purposes
 
 class TestSinkHandler:
   async def handle_DATA(self, server, session, envelope):

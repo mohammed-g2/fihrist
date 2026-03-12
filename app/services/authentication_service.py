@@ -1,9 +1,14 @@
+from flask import current_app
 from app.ext import db
+from app.utils.security import decode_timed_token
 from app.models import User
 from app.models.value_objects import Username, Password
 from app.errors import (
   UserNotFoundError, PasswordValidationError, EmailAlreadyExistsError,
-  UsernameAlreadyExistsError, DatabaseCommitError)
+  UsernameAlreadyExistsError, DatabaseCommitError, TokenError,
+  TokenPayloadError)
+from .email_service import EmailService
+
 
 class AuthenticationService:
   
@@ -57,6 +62,39 @@ class AuthenticationService:
       email=email, 
       password=_password.value)
     db.session.add(user)
+    try:
+      db.session.commit()
+    except Exception as e:
+      raise DatabaseCommitError(e)
+    
+    EmailService.send_email(user, 'confirm_account')
+    try:
+      EmailService
+    except Exception as e:
+      current_app.logger.error(e)
+  
+    return True
+
+  @classmethod
+  def confirm_user(cls, user: User, token: str) -> bool:
+    """
+    Changes `User.confirmed` flag
+    
+    :param user: `User` model instance
+    :returns: True if change is successful
+    :raises DatabaseCommitError: if error occurred while committing to database
+    """
+    try:
+      decoded = decode_timed_token(token)
+    except TokenError as e:
+      raise TokenError(e)
+    
+    if decoded.get('confirm') != user.id:
+      raise TokenPayloadError()
+    
+    user.confirmed = True
+    db.session.add(user)
+    
     try:
       db.session.commit()
     except Exception as e:
