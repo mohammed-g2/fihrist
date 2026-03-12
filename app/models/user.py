@@ -1,3 +1,4 @@
+from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app.ext import db
@@ -10,6 +11,9 @@ class User(db.Model, UserMixin):
   email = db.Column(db.String(64), unique=True, index=True)
   password_hash = db.Column(db.String)
   confirmed = db.Column(db.Boolean(), default=False)
+  bio = db.Column(db.Text())
+  member_since = db.Column(db.DateTime, default=datetime.utcnow)
+  last_seen = db.Column(db.DateTime, default=datetime.utcnow)
   
   def __repr__(self):
     return f'<User { self.username }>'

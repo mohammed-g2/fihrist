@@ -3,7 +3,7 @@
   --primary-hover: #0D1B2A;
   --primary-active: #0B121E;
   /* Slate blue - Secondary buttons (Cancel, Draft) */
-  --secobdary-action: #415A77; 
+  --secondary-action: #415A77; 
   --secondary-hover: #778DA9;
   --link: #1B263B; /* Blue */
   --link-hover: #344EAD;
@@ -90,7 +90,7 @@ a:active {
 }
 
 .bg-slate {
-  background-color: var(--secobdary-action) !important;
+  background-color: var(--secondary-action) !important;
   color: #FFFFFF !important;
 }
 .bg-alert {
@@ -117,18 +117,18 @@ a:active {
 }
 
 .btn-slate {
-  background-color: var(--secobdary-action) !important;
-  border-color: var(--secobdary-action) !important;
+  background-color: var(--secondary-action) !important;
+  border-color: var(--secondary-action) !important;
   color: #FFFFFF !important;
 }
 .btn-slate:hover {
-  background-color: var(--secobdary-hover) !important;
-  border-color: var(--secobdary-action) !important;
-  color: #FFFFFF !important;
+  background-color: var(--secondary-hover) !important;
+  border-color: var(--secondary-hover) !important;
+  color: #000000 !important;
 }
 .btn-slate:active {
-  background-color: var(--secobdary-active) !important;
-  border-color: var(--secobdary-action) !important;
+  background-color: var(--secondary-active) !important;
+  border-color: var(--secondary-action) !important;
   color: #FFFFFF !important;
 }
 
