@@ -15,10 +15,10 @@ class RegisterForm(FlaskForm):
   username = StringField(_l('Username'), validators=[DataRequired()])
   email = EmailField(_l('Email'), validators=[DataRequired(), Email(), Length(max=64)])
   password = PasswordField(_l('Password'), validators=[
-      DataRequired(), 
+      DataRequired(), Length(max=64),
       EqualTo('confirm_password', message=_l('Password must match.'))])
   confirm_password = PasswordField(
-    _l('Confirm Password'), validators=[DataRequired()])
+    _l('Confirm Password'), validators=[DataRequired(), Length(max=64)])
   terms = BooleanField(_l('I agree on terms & services'), validators=[DataRequired()])
   submit = SubmitField(_l('Sign up'))
 
@@ -30,7 +30,7 @@ class VerifyUserEmailForm(FlaskForm):
 
 class ResetPasswordForm(FlaskForm):
   password = PasswordField('New Password', validators=[
-    DataRequired(), Length(min=6), 
+    DataRequired(), Length(min=6, max=64), 
     EqualTo('password2', message='Password must match.')])
   password2 = PasswordField('Confirm password', validators=[DataRequired()])
   submit = SubmitField('Change Password')
