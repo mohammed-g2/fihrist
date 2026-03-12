@@ -2,8 +2,7 @@ from dataclasses import dataclass, field
 from app.models import User
 from app.utils.security import generate_timed_token
 from app.utils.send_email import send_email
-from app.errors import (
-  EmailAlreadyExistsError, PasswordValidationError, UserNotFoundError)
+from app.errors import PasswordValidationError
 
 
 @dataclass
@@ -17,7 +16,7 @@ class EmailMessage:
 class EmailService:
   
   @classmethod
-  def confirm_account(cls, user: User, **kwargs) -> EmailMessage:
+  def confirm_account(cls, user: User) -> EmailMessage:
     token = generate_timed_token({'confirm': user.id})
     return EmailMessage(
       to=user.email,
@@ -26,24 +25,20 @@ class EmailService:
       context=dict(user=user, token=token))
   
   @classmethod
-  def update_email_address(cls, user: User, **kwargs) -> EmailMessage:
-    email_found = User.get_by_email(email=kwargs.get('new_email'))
-    if email_found:
-      raise EmailAlreadyExistsError()
-
+  def update_email_address(cls, user: User, new_email: str) -> EmailMessage:
     token = generate_timed_token({
       'email': user.email,
-      'new-email': kwargs.get('new_email')
+      'new-email': new_email
     })
     return EmailMessage(
-      to=kwargs.get('new_email'),
+      to=new_email,
       subject='Change Email Address',
       template='emails/user/update-email',
       context=dict(token=token))
   
   @classmethod
-  def update_password(cls, user: User, **kwargs) -> EmailMessage:
-    if not user.verify_password(kwargs.get('password')):
+  def update_password(cls, user: User, password: str) -> EmailMessage:
+    if not user.verify_password(password):
         raise PasswordValidationError()
     
     token = generate_timed_token({'change-password': user.id})
@@ -54,14 +49,10 @@ class EmailService:
       context=dict(token=token))
   
   @classmethod
-  def reset_password_request(cls, user: User, **kwargs) -> EmailMessage:
-    user_found = User.get_by_email(kwargs.get('email'))
-    if not user_found:
-      raise UserNotFoundError()
-
-    token = generate_timed_token({'reset-password': kwargs.get('email')})
+  def reset_password_request(cls, user: User) -> EmailMessage:
+    token = generate_timed_token({'reset-password': user.email})
     return EmailMessage(
-      to=kwargs.get('email'),
+      to=user.email,
       subject='Reset Password',
       template='emails/auth/reset-password',
       context=dict(token=token))

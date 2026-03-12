@@ -4,9 +4,11 @@ from flask_babel import _
 from app.services import AuthenticationService, EmailService
 from app.errors import (
   LoginError, UsernameAlreadyExistsError, EmailAlreadyExistsError,
-  DatabaseCommitError, InvalidPasswordError, InvalidUsernameError)
+  DatabaseCommitError, InvalidPasswordError, InvalidUsernameError,
+  UserNotFoundError, TokenError, TokenPayloadError)
 from . import auth_bp
-from .forms import LoginForm, RegisterForm
+from .forms import (
+  LoginForm, RegisterForm, VerifyUserEmailForm, ResetPasswordForm)
 
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
@@ -84,8 +86,56 @@ def request_confirmation_email():
   srv = EmailService
   try:
     srv.send_email(user=current_user, email_type='confirm_account')
-    flash(_('A new confirmation email has been sent. Please check your inbox.'))
+    flash(
+      _('A new confirmation email has been sent. Please check your inbox.'),
+      category='info')
   except Exception as e:
     flash(_('Something went wrong, please try again later.'), category='warning')
 
   return redirect(url_for('user.settings'))
+
+
+@auth_bp.route('/reset-password', methods=['GET', 'POST'])
+def request_password_reset():
+  srv = AuthenticationService
+  form = VerifyUserEmailForm()
+  
+  if form.validate_on_submit():
+    try:
+      srv.request_password_reset(form.email.data)
+      flash(
+        _('An email will been sent to reset you password. Please check your inbox.'),
+        category='info')
+      return redirect(url_for('main.index'))
+    except UserNotFoundError:
+      flash(
+        _('An email will been sent to reset you password. Please check your inbox.'),
+        category='info')
+      return redirect(url_for('main.index'))
+    except Exception as e:
+      print('*' * 20, e)
+      flash(_('Something went wrong, please try again later.'), category='warning')
+  
+  return render_template('auth/forgot-password.html', form=form)
+
+
+@auth_bp.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+  form = ResetPasswordForm()
+  srv = AuthenticationService
+  
+  if form.validate_on_submit():
+    try:
+      srv.reset_password(
+        token=token,
+        new_password=form.password.data)
+      flash(_('Password has been reset. You can login now.'), category='info')
+      return redirect(url_for('auth.login'))
+    except TokenError:
+      flash(_('Invalid Token'), category='danger')
+    except TokenPayloadError:
+      flash(_('Invalid Token'), category='danger')
+    except InvalidPasswordError:
+      form.password.errors.append(_('Invalid Password'))
+      
+  return render_template('auth/reset-password.html', form=form)

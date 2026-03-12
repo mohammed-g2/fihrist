@@ -1,4 +1,5 @@
 from flask import current_app
+from email_validator import validate_email, EmailNotValidError
 from app.ext import db
 from app.utils.security import decode_timed_token
 from app.models import User
@@ -6,7 +7,7 @@ from app.models.value_objects import Username, Password
 from app.errors import (
   UserNotFoundError, PasswordValidationError, EmailAlreadyExistsError,
   UsernameAlreadyExistsError, DatabaseCommitError, TokenError,
-  TokenPayloadError)
+  TokenPayloadError, InvalidPasswordError)
 from .email_service import EmailService
 
 
@@ -95,6 +96,71 @@ class AuthenticationService:
     user.confirmed = True
     db.session.add(user)
     
+    try:
+      db.session.commit()
+    except Exception as e:
+      raise DatabaseCommitError(e)
+    
+    return True
+
+  @classmethod
+  def request_password_reset(cls, email: str) -> bool:
+    """
+    Request password change for users who forgot their passwords
+    
+    :param email: user's email address
+    :returns: True if reset password email is sent
+    :raises UserNotFoundError: if user with given email not found
+    :raises Exception: if failed to send email
+    """
+    user = User.query.filter_by(email=email).first()
+    if not user:
+      raise UserNotFoundError()
+    try:
+      EmailService.send_email(email_type='reset_password_request', user=user)
+    except Exception as e:
+      raise Exception(e)
+    
+    return True
+  
+  @classmethod
+  def reset_password(cls, token: str, new_password: str) -> bool:
+    """
+    Reset user password
+    
+    :param token:
+    :param new_password:
+    :returns: True if password changed
+    
+    :raises TokenError: if token missing 'reset-password'
+    :raises InvalidPasswordError: if new_password doesn't match `Password` value object  
+    :raises TokenPayloadError: if email in 'reset-password' is invalid
+    :raises TokenPayloadError: if user with given not found in database
+    :raises DatabaseCommitError: if failed to commit to database
+    """
+    decoded = decode_timed_token(token)
+    email = decoded.get('reset-password')
+    if email is None:
+      raise TokenError()
+    
+    try:
+      _password = Password(new_password)
+    except InvalidPasswordError:
+      raise InvalidPasswordError()
+    
+    try:
+      email_info = validate_email(email, check_deliverability=False)
+      email = email_info.normalized
+    except EmailNotValidError as e:
+      raise TokenPayloadError(e)
+    
+    user = User.query.filter_by(email=email).first()
+    
+    if not user:
+      raise TokenPayloadError()
+    
+    user.password = _password.value
+    db.session.add(user)
     try:
       db.session.commit()
     except Exception as e:
