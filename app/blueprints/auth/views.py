@@ -80,6 +80,7 @@ def confirm(token):
     srv.confirm_user(current_user, token)
     flash(_('Account Confirmed'), category='info')
   except Exception as e:
+    current_app.logger.exception(e)
     flash(_('Something went wrong, please try again later'), category='warning')
     
   return redirect(url_for('main.index'))
@@ -99,6 +100,7 @@ def request_confirmation_email():
         _('Could not send your confirmation email now. Please try again later'),
         category='warning')
   except Exception as e:
+    current_app.logger.exception(e)
     flash(_('Something went wrong, please try again later'), category='warning')
 
   return redirect(url_for('user.settings'))
@@ -126,6 +128,7 @@ def request_password_reset():
         _('Could not send your confirmation email now. Please try again later'),
         category='warning')
     except Exception as e:
+      current_app.logger.exception(e)
       flash(_('Something went wrong, please try again later'), category='warning')
   
   return render_template('auth/forgot-password.html', form=form)
@@ -148,5 +151,6 @@ def reset_password(token):
     except InvalidPasswordError:
       form.password.errors.append(_('Invalid Password'))
     except Exception as e:
+      current_app.logger.exception(e)
       flash(_('Something went wrong, please try again later'), category='warning')
   return render_template('auth/reset-password.html', form=form)

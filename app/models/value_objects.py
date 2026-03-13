@@ -27,7 +27,7 @@ class Password:
     if not re.match('^(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>])(?=.{6,}).*$', self.value)\
         or len(self.value) > 64:
       raise InvalidPasswordError(
-        'Password must be 6 characters long, contain one number and one symbol.')
+        'Password must be 6 characters long, contain at least one number and one symbol.')
   
   def __str__(self):
     return '<Password>'

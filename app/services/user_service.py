@@ -1,11 +1,12 @@
 from email_validator import validate_email, EmailNotValidError
 from app.ext import db
 from app.models import User
-from app.models.value_objects import Username, Email
+from app.models.value_objects import Username, Email, Password
 from app.utils.security import decode_timed_token
 from app.errors import (
   InvalidUsernameError, UsernameAlreadyExistsError, DatabaseCommitError,
-  EmailAlreadyExistsError, TokenError, TokenPayloadError, InvalidEmailError)
+  EmailAlreadyExistsError, TokenError, TokenPayloadError, InvalidEmailError,
+  PasswordValidationError)
 from .email_service import EmailService
 
 
@@ -67,16 +68,12 @@ class UserService:
     email_found = User.query.filter_by(email=_email.value).first()
     if email_found:
       raise EmailAlreadyExistsError()
-    
-    try:
-      EmailService.send_email(
-        user=user,
-        email_type='update_email_address', 
-        new_email=_email.value)
-    except Exception as e:
-      db.session.rollback()
-      raise DatabaseCommitError(e)
-    
+
+    EmailService.send_email(
+      user=user,
+      email_type='update_email_address', 
+      new_email=_email.value)
+
     return True
   
   @classmethod
@@ -92,11 +89,9 @@ class UserService:
     :raises TokenPayloadError: if `new-email` not in the token
     :raises DatabaseCommitError: if failed to commit to database
     """
-    try:
-      decoded = decode_timed_token(token)
-    except TokenError as e:
-      raise TokenError(e)
-    
+
+    decoded = decode_timed_token(token)
+
     email = decoded.get('new-email')
     if not email:
       raise TokenPayloadError()
@@ -104,6 +99,55 @@ class UserService:
     _email = Email(value=email)
     
     user.email = _email.value
+    db.session.add(user)
+    try:
+      db.session.commit()
+    except Exception as e:
+      db.session.rollback()
+      raise DatabaseCommitError(e)
+    
+    return True
+  
+  
+  @classmethod
+  def request_password_change(cls, user: User, password: str) -> bool:
+    """
+    Send an email to the user to confirm password change
+    
+    :param user: `User` model instance
+    :param password: user's password
+    :returns: True if successful
+    
+    :raises PasswordValidationError: if faild to validate password
+    :raises Exception: if failed to send email
+    """
+    if not user.verify_password(password):
+      raise PasswordValidationError()
+    EmailService.send_email(email_type='change_password', user=user)
+    
+    return True
+  
+  @classmethod
+  def change_password(cls, user: User, token: str, new_password: str) -> bool:
+    """
+    Change user's password
+    
+    :param user: `User` model instance
+    :param token:
+    :param new_password:
+    :returns: True if change successful
+    
+    :raises InvalidPasswordError: from `app.models.value_objects.Password`
+    :raises TokenError: if token in invalid
+    :raises DatabaseCommitError: if failed to commit to database
+    """
+    _password = Password(value=new_password)
+    decoded = decode_timed_token(token)
+
+    if decoded.get('change-password') != user.id:
+      raise TokenPayloadError()
+    
+    user.password = _password.value
     db.session.add(user)
     try:
       db.session.commit()

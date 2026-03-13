@@ -37,7 +37,7 @@ class EmailService:
       context=dict(token=token))
   
   @classmethod
-  def chnage_password(cls, user: User, password: str) -> EmailMessage:
+  def change_password(cls, user: User) -> EmailMessage:
     token = generate_timed_token({'change-password': user.id})
     return EmailMessage(
       to=user.email,
@@ -78,7 +78,7 @@ class EmailService:
     types = {
       'confirm_account': cls.confirm_account,
       'update_email_address': cls.update_email_address,
-      'change_password': cls.update_password,
+      'change_password': cls.change_password,
       'reset_password_request': cls.reset_password_request
     }
     
