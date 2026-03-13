@@ -1,4 +1,5 @@
 Relationships
+`
 User 1---* Post
 User *---1 Role
 User 1---* Blog
@@ -11,13 +12,15 @@ Post 1---* Comment
 Post 1---* Revisions
 Post 1---1 PostImage
 User 1---* PostImage
+`
 
 User (author/owner)
 - id
 - username
 - email
 - password_hash
-- created_at
+- member_since
+- last_seen
 - role_id* 
 
 Role
@@ -32,7 +35,7 @@ Blog
 - slug
 - description
 - created_at
-- owner_id*
+- user_id*
 
 BlogMember
 - id
@@ -43,7 +46,7 @@ BlogMember
 Post
 - id
 - blog_id*
-- author_id*
+- user_id*
 - title
 - slug
 - content
@@ -56,7 +59,7 @@ Post
 PostImage
 - id 
 - post_id*
-- uploaded_by*
+- user_id*
 - url
 - thumbnail_url
 - alt_text
@@ -84,7 +87,7 @@ Tag
 Comment
 - id
 - post_id*
-- author_id*
+- user_id*
 - content
 - created_at
 - approved

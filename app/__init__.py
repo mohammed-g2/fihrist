@@ -31,16 +31,13 @@ def create_app(config_name: str) -> Flask:
     migrate.init_app(app, db)
   
   with app.app_context():
-    from app.models import User
+    from app.models import User, Role
   
-    @app.context_processor
-    def create_template_context():
-      _locale = locale_selector()
-      if 'ar' in _locale:
-        _dir = 'rtl'
-      else:
-        _dir = 'ltr'
-      return dict(_locale=_locale, _dir=_dir)
+  @app.context_processor
+  def create_template_context():
+    _locale = locale_selector()
+    _dir = 'ar' if 'ar' in _locale else 'en'
+    return dict(_locale=_locale, _dir=_dir)
   
   
   from app.blueprints import (

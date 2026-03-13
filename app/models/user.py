@@ -2,7 +2,6 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app.ext import db
-from app.models.value_objects import Password
 
 class User(db.Model, UserMixin):
   __tablename__ = 'users'
@@ -14,6 +13,7 @@ class User(db.Model, UserMixin):
   bio = db.Column(db.Text())
   member_since = db.Column(db.DateTime, default=datetime.utcnow)
   last_seen = db.Column(db.DateTime, default=datetime.utcnow)
+  role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
   
   def __repr__(self):
     return f'<User { self.username }>'
@@ -23,7 +23,7 @@ class User(db.Model, UserMixin):
     raise AttributeError('Password is not readable.')
   
   @password.setter
-  def password(self, value: Password):
+  def password(self, value: str):
     self.password_hash = generate_password_hash(value)
   
   def verify_password(self, password: str) -> bool:
