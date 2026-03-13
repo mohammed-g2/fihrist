@@ -1,6 +1,8 @@
 import re
 from dataclasses import dataclass
-from app.errors import InvalidUsernameError, InvalidPasswordError
+from email_validator import validate_email, EmailNotValidError
+from app.errors import (
+  InvalidUsernameError, InvalidPasswordError, InvalidEmailError)
 
 @dataclass(frozen=True)
 class Username:

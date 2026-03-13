@@ -5,7 +5,7 @@ from app.services import AuthenticationService, EmailService
 from app.errors import (
   LoginError, UsernameAlreadyExistsError, EmailAlreadyExistsError,
   DatabaseCommitError, InvalidPasswordError, InvalidUsernameError,
-  UserNotFoundError, TokenError, TokenPayloadError)
+  UserNotFoundError, TokenError)
 from . import auth_bp
 from .forms import (
   LoginForm, RegisterForm, VerifyUserEmailForm, ResetPasswordForm)
@@ -132,8 +132,6 @@ def reset_password(token):
       flash(_('Password has been reset. You can login now.'), category='info')
       return redirect(url_for('auth.login'))
     except TokenError:
-      flash(_('Invalid Token'), category='danger')
-    except TokenPayloadError:
       flash(_('Invalid Token'), category='danger')
     except InvalidPasswordError:
       form.password.errors.append(_('Invalid Password'))

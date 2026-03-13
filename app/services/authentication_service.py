@@ -7,7 +7,7 @@ from app.models.value_objects import Username, Password
 from app.errors import (
   UserNotFoundError, PasswordValidationError, EmailAlreadyExistsError,
   UsernameAlreadyExistsError, DatabaseCommitError, TokenError,
-  TokenPayloadError, InvalidPasswordError)
+  TokenPayloadError, InvalidPasswordError, InvalidEmailError)
 from .email_service import EmailService
 
 
@@ -50,6 +50,13 @@ class AuthenticationService:
     username_found = User.query.filter_by(username=username).first()
     if username_found:
       raise UsernameAlreadyExistsError()
+    
+    try:
+      email_info = validate_email(email, check_deliverability=False)
+      email = email_info.normalized
+    except EmailNotValidError as e:
+      raise InvalidEmailError(e)
+    
     email_found = User.query.filter_by(email=email).first()
     if email_found:
       raise EmailAlreadyExistsError()
@@ -143,11 +150,8 @@ class AuthenticationService:
     if email is None:
       raise TokenError()
     
-    try:
-      _password = Password(new_password)
-    except InvalidPasswordError:
-      raise InvalidPasswordError()
-    
+    _password = Password(new_password)
+
     try:
       email_info = validate_email(email, check_deliverability=False)
       email = email_info.normalized

@@ -3,7 +3,8 @@ from flask_login import login_required, current_user
 from flask_babel import _
 from app.services import UserService
 from app.errors import (
-  InvalidUsernameError, UsernameAlreadyExistsError, DatabaseCommitError)
+  InvalidUsernameError, UsernameAlreadyExistsError, DatabaseCommitError,
+  EmailAlreadyExistsError, InvalidEmailError, TokenError)
 from . import user_bp
 from .forms import (
   ChangePasswordForm, UpdateUserProfileForm, UpdateEmailForm,
@@ -22,13 +23,25 @@ def profile_form_handler(form):
     except UsernameAlreadyExistsError:
       flash(_('Username Already Exists.'))
     except DatabaseCommitError:
-      flash(_('Something went wrong, please try again later.'), category='warning')
+      flash(_('Something went wrong, please try again later'), category='warning')
 
 
 def email_form_handler(form):
-  pass
+  if form.validate_on_submit():
+    srv = UserService
+    try:
+      srv.request_email_update(
+        user=current_user._get_current_object(),
+        new_email=form.email.data)
+      flash(_('An email have been sent to confirm change. Please check your inbox'), category='info')
+    except EmailAlreadyExistsError:
+      flash(_('Email already exists.'), category='warning')
+    except InvalidEmailError:
+      flash(_('Invalid Email.'), category='warning')
+    except Exception as e:
+      flash(_('Something went wrong, please try again later'), category='warning')
 
-  
+
 def password_form_handler(form):
   pass
 
@@ -57,3 +70,18 @@ def settings():
     profile_form=profile_form,
     email_form=email_form,
     password_form=password_form)
+
+
+@user_bp.route('/update-email/<token>')
+@login_required
+def update_email(token):
+  srv = UserService
+  try:
+    srv.update_email(
+      user=current_user._get_current_object(),
+      token=token)
+  except TokenError:
+    flash(_('Invalid Token'))
+  except DatabaseCommitError:
+    flash(_('Something went wrong, please try again later'), category='warning')
+  return redirect(url_for('user.settings'))

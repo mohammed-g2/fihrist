@@ -36,6 +36,8 @@ class InvalidUsernameError(RegistrationError): pass
 class InvalidPasswordError(RegistrationError): pass
 
 
+class InvalidEmailError(RegistrationError): pass
+
 # Token Errors
 class TokenError(AuthError):
   """Base class for all token related errors."""
@@ -66,7 +68,7 @@ class TokenPayloadError(TokenError):
 # General process errors
 class ProcessError(Exception):
   """Base class for all process failure related errors."""
-  def __init__(self, message='Process failed.'):
+  def __init__(self, message='Process failed.', status_code=500):
     super().__init__(message)
 
 
