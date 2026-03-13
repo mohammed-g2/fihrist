@@ -1,5 +1,7 @@
+import sys
 import os
 import secrets
+import logging
 from flask import Flask
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -33,6 +35,22 @@ class DevelopmentConfig(Config):
   ENV = 'development'
   SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or\
     f'sqlite:///{os.path.join(basedir, "data", "dev.sqlite")}'
+    
+  @staticmethod
+  def init_app(app: Flask) -> None:
+    Config.init_app(app)
+    app.logger.handlers.clear()
+    
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setLevel(logging.INFO)
+    
+    formatter = logging.Formatter(
+      '[%(asctime)s] %(levelname)s in %(module)s [%(pathname)s:%(lineno)d]:\n%(message)s')
+    handler.setFormatter(formatter)
+    
+    app.logger.addHandler(handler)
+    app.logger.setLevel(logging.INFO)
+    app.logger.propagate = False
 
 
 class TestingConfig(Config):
