@@ -26,7 +26,7 @@ def login():
       login_user(user)
       return redirect(url_for('main.index'))
     except LoginError:
-      flash(_('Wrong Username or Password.'), category='warning')
+      flash(_('Wrong Username or Password'), category='warning')
   return render_template('auth/login.html', form=form)
 
 
@@ -51,18 +51,19 @@ def register():
         username=form.username.data,
         email=form.email.data,
         password=form.password.data)
-      flash(_('You can login now.'), category='info')
+      flash(_('You can login now'), category='info')
       return redirect(url_for('auth.login'))
     except UsernameAlreadyExistsError:
-      form.username.errors.append(_('Username already exists.'))
+      form.username.errors.append(_('Username already exists'))
     except EmailAlreadyExistsError:
-      form.email.errors.append(_('Email already exists.'))
+      form.email.errors.append(_('Email already exists'))
     except InvalidPasswordError:
       form.password.errors.append(_('Invalid password'))
     except InvalidUsernameError:
       form.username.errors.append(_('Invalid username'))
     except Exception as e:
-      flash(_('Something went wrong, please try again later.'), category='warning')
+      current_app.logger.exception(e)
+      flash(_('Something went wrong, please try again later'), category='warning')
 
   return render_template('auth/register.html', form=form)
 
@@ -73,9 +74,9 @@ def confirm(token):
   srv = AuthenticationService
   try:
     srv.confirm_user(current_user, token)
-    flash(_('Account Confirmed.'), category='info')
+    flash(_('Account Confirmed'), category='info')
   except Exception as e:
-    flash(_('Something went wrong, please try again later.'), category='warning')
+    flash(_('Something went wrong, please try again later'), category='warning')
     
   return redirect(url_for('main.index'))
 
@@ -87,10 +88,10 @@ def request_confirmation_email():
   try:
     srv.send_email(user=current_user, email_type='confirm_account')
     flash(
-      _('A new confirmation email has been sent. Please check your inbox.'),
+      _('A new confirmation email has been sent. Please check your inbox'),
       category='info')
   except Exception as e:
-    flash(_('Something went wrong, please try again later.'), category='warning')
+    flash(_('Something went wrong, please try again later'), category='warning')
 
   return redirect(url_for('user.settings'))
 
@@ -104,17 +105,17 @@ def request_password_reset():
     try:
       srv.request_password_reset(form.email.data)
       flash(
-        _('An email will been sent to reset you password. Please check your inbox.'),
+        _('An email will been sent to reset you password. Please check your inbox'),
         category='info')
       return redirect(url_for('main.index'))
     except UserNotFoundError:
       flash(
-        _('An email will been sent to reset you password. Please check your inbox.'),
+        _('An email will been sent to reset you password. Please check your inbox'),
         category='info')
       return redirect(url_for('main.index'))
     except Exception as e:
       print('*' * 20, e)
-      flash(_('Something went wrong, please try again later.'), category='warning')
+      flash(_('Something went wrong, please try again later'), category='warning')
   
   return render_template('auth/forgot-password.html', form=form)
 
@@ -129,7 +130,7 @@ def reset_password(token):
       srv.reset_password(
         token=token,
         new_password=form.password.data)
-      flash(_('Password has been reset. You can login now.'), category='info')
+      flash(_('Password has been reset. You can login now'), category='info')
       return redirect(url_for('auth.login'))
     except TokenError:
       flash(_('Invalid Token'), category='danger')

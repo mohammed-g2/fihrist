@@ -1,9 +1,8 @@
 from flask import current_app
-from email_validator import validate_email, EmailNotValidError
 from app.ext import db
 from app.utils.security import decode_timed_token
 from app.models import User
-from app.models.value_objects import Username, Password
+from app.models.value_objects import Username, Password, Email
 from app.errors import (
   UserNotFoundError, PasswordValidationError, EmailAlreadyExistsError,
   UsernameAlreadyExistsError, DatabaseCommitError, TokenError,
@@ -46,38 +45,33 @@ class AuthenticationService:
     :raises DatabaseCommitError: if failed to commit to database
     :raises InvalidUsernameError: if username is invalid
     :raises InvalidPasswordError: if password is invalid
+    :raises InvalidEmailError: if email is invalid
     """
-    username_found = User.query.filter_by(username=username).first()
+    _username = Username(value=username)
+    _password = Password(value=password)
+    _email = Email(value=email)
+    
+    username_found = User.query.filter_by(username=_username.value).first()
     if username_found:
       raise UsernameAlreadyExistsError()
     
-    try:
-      email_info = validate_email(email, check_deliverability=False)
-      email = email_info.normalized
-    except EmailNotValidError as e:
-      raise InvalidEmailError(e)
-    
-    email_found = User.query.filter_by(email=email).first()
+    email_found = User.query.filter_by(email=_email.value).first()
     if email_found:
       raise EmailAlreadyExistsError()
     
-    
-    _username = Username(value=username)
-    _password = Password(value=password)
-    
     user = User(
       username=_username.value, 
-      email=email, 
+      email=_email.value, 
       password=_password.value)
     db.session.add(user)
     try:
       db.session.commit()
     except Exception as e:
+      db.session.rollback()
       raise DatabaseCommitError(e)
     
-    EmailService.send_email(user, 'confirm_account')
     try:
-      EmailService
+      EmailService.send_email(user, 'confirm_account')
     except Exception as e:
       current_app.logger.error(e)
   
@@ -106,6 +100,7 @@ class AuthenticationService:
     try:
       db.session.commit()
     except Exception as e:
+      db.session.rollback()
       raise DatabaseCommitError(e)
     
     return True
@@ -153,12 +148,11 @@ class AuthenticationService:
     _password = Password(new_password)
 
     try:
-      email_info = validate_email(email, check_deliverability=False)
-      email = email_info.normalized
+      _email = Email(value=email)
     except EmailNotValidError as e:
       raise TokenPayloadError(e)
     
-    user = User.query.filter_by(email=email).first()
+    user = User.query.filter_by(email=_email.value).first()
     
     if not user:
       raise TokenPayloadError()
@@ -168,6 +162,7 @@ class AuthenticationService:
     try:
       db.session.commit()
     except Exception as e:
+      db.session.rollback()
       raise DatabaseCommitError(e)
     
     return True

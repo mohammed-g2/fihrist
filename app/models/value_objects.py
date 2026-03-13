@@ -31,3 +31,18 @@ class Password:
   
   def __str__(self):
     return '<Password>'
+
+
+@dataclass(frozen=True)
+class Email:
+  value: str
+  check_deliverability: bool = False
+  
+  def __post_init__(self):
+    try:
+      email_info = validate_email(
+        self.value, check_deliverability=self.check_deliverability)
+      object.__setattr__(self, 'value', email_info.normalized) 
+    except EmailNotValidError as e:
+      raise InvalidEmailError(e)
+  

@@ -18,10 +18,11 @@ def profile_form_handler(form):
       srv.update_profile(
         user=current_user._get_current_object(),
         data={'username': form.username.data, 'bio': form.bio.data})
+      flash(_('Profile Updated'))
     except InvalidUsernameError:
-      flash(_('Invalid Username.'))
+      flash(_('Invalid Username'))
     except UsernameAlreadyExistsError:
-      flash(_('Username Already Exists.'))
+      flash(_('Username Already Exists'))
     except DatabaseCommitError:
       flash(_('Something went wrong, please try again later'), category='warning')
 
@@ -35,7 +36,7 @@ def email_form_handler(form):
         new_email=form.email.data)
       flash(_('An email have been sent to confirm change. Please check your inbox'), category='info')
     except EmailAlreadyExistsError:
-      flash(_('Email already exists.'), category='warning')
+      flash(_('Email already exists'), category='warning')
     except InvalidEmailError:
       flash(_('Invalid Email.'), category='warning')
     except Exception as e:

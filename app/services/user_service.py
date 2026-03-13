@@ -1,7 +1,7 @@
 from email_validator import validate_email, EmailNotValidError
 from app.ext import db
 from app.models import User
-from app.models.value_objects import Username
+from app.models.value_objects import Username, Email
 from app.utils.security import decode_timed_token
 from app.errors import (
   InvalidUsernameError, UsernameAlreadyExistsError, DatabaseCommitError,
@@ -25,11 +25,8 @@ class UserService:
     :raises DatabaseCommitError: if failed to commit to database 
     """
     if data.get('username') and data.get('username') != user.username:
-      try:
-        _username = Username(data.get('username'))
-      except InvalidUsernameError:
-        raise InvalidUsernameError()
-      
+      _username = Username(data.get('username'))
+
       username_found = User.query.filter_by(username=_username.value).first()
       if username_found:
         raise UsernameAlreadyExistsError()
@@ -65,13 +62,9 @@ class UserService:
     if new_email == user.email:
       return False
     
-    try:
-      email_info = validate_email(new_email, check_deliverability=False)
-      email = email_info.normalized
-    except EmailNotValidError as e:
-      raise InvalidEmailError(e)
+    _email = Email(value=new_email)
     
-    email_found = User.query.filter_by(email=email).first()
+    email_found = User.query.filter_by(email=_email.value).first()
     if email_found:
       raise EmailAlreadyExistsError()
     
@@ -79,7 +72,7 @@ class UserService:
       EmailService.send_email(
         user=user,
         email_type='update_email_address', 
-        new_email=email)
+        new_email=_email.value)
     except Exception as e:
       db.session.rollback()
       raise DatabaseCommitError(e)
@@ -108,7 +101,9 @@ class UserService:
     if not email:
       raise TokenPayloadError()
     
-    user.email = email
+    _email = Email(value=email)
+    
+    user.email = _email.value
     db.session.add(user)
     try:
       db.session.commit()
