@@ -74,6 +74,11 @@ class ProcessError(Exception):
 
 # Database Error
 class DatabaseCommitError(ProcessError):
-  """raised when failed to commit to database"""
+  """Raised when failed to commit to database"""
   def __init__(self, message='Failed to commit to database'):
+    super().__init__(message)
+
+class EmailSendingError(ProcessError):
+  """Raised when failed to send email"""
+  def __init__(self, message='Failed to send email'):
     super().__init__(message)

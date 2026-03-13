@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from app.models import User
 from app.utils.security import generate_timed_token
 from app.utils.send_email import send_email
-from app.errors import PasswordValidationError
+from app.errors import PasswordValidationError, EmailSendingError
 
 
 @dataclass
@@ -37,10 +37,7 @@ class EmailService:
       context=dict(token=token))
   
   @classmethod
-  def update_password(cls, user: User, password: str) -> EmailMessage:
-    if not user.verify_password(password):
-        raise PasswordValidationError()
-    
+  def chnage_password(cls, user: User, password: str) -> EmailMessage:
     token = generate_timed_token({'change-password': user.id})
     return EmailMessage(
       to=user.email,
@@ -67,7 +64,7 @@ class EmailService:
     :param type: is one of 
       - confirm_account
       - update_email_address
-      - update_password
+      - change_password
       - reset_password_request
     
     :param new_email: required if type is update_email_address
@@ -81,7 +78,7 @@ class EmailService:
     types = {
       'confirm_account': cls.confirm_account,
       'update_email_address': cls.update_email_address,
-      'update_password': cls.update_password,
+      'change_password': cls.update_password,
       'reset_password_request': cls.reset_password_request
     }
     
@@ -90,9 +87,11 @@ class EmailService:
       raise ValueError('Incorrect email type.')
     
     data = msg(user=user, **kwargs)
-    
-    send_email(
-      to=data.to, 
-      subject=data.subject, 
-      template=data.template, 
-      **data.context)
+    try:
+      send_email(
+        to=data.to, 
+        subject=data.subject, 
+        template=data.template, 
+        **data.context)
+    except Exception as e:
+      raise EmailSendingError(e)

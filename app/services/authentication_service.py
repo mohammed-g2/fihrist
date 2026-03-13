@@ -46,6 +46,7 @@ class AuthenticationService:
     :raises InvalidUsernameError: if username is invalid
     :raises InvalidPasswordError: if password is invalid
     :raises InvalidEmailError: if email is invalid
+    :raises EmailSendingError: if failed to send email
     """
     _username = Username(value=username)
     _password = Password(value=password)
@@ -70,10 +71,7 @@ class AuthenticationService:
       db.session.rollback()
       raise DatabaseCommitError(e)
     
-    try:
-      EmailService.send_email(user, 'confirm_account')
-    except Exception as e:
-      current_app.logger.error(e)
+    EmailService.send_email(user, 'confirm_account')
   
     return True
 
@@ -114,15 +112,13 @@ class AuthenticationService:
     :returns: True if reset password email is sent
     :raises UserNotFoundError: if user with given email not found
     :raises Exception: if failed to send email
+    :raises EmailSendingError: if failed to send email
     """
     user = User.query.filter_by(email=email).first()
     if not user:
       raise UserNotFoundError()
-    try:
-      EmailService.send_email(email_type='reset_password_request', user=user)
-    except Exception as e:
-      raise Exception(e)
-    
+    EmailService.send_email(email_type='reset_password_request', user=user)
+
     return True
   
   @classmethod
@@ -146,12 +142,7 @@ class AuthenticationService:
       raise TokenError()
     
     _password = Password(new_password)
-
-    try:
-      _email = Email(value=email)
-    except EmailNotValidError as e:
-      raise TokenPayloadError(e)
-    
+    _email = Email(value=email)
     user = User.query.filter_by(email=_email.value).first()
     
     if not user:

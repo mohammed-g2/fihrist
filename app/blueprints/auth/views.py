@@ -5,7 +5,7 @@ from app.services import AuthenticationService, EmailService
 from app.errors import (
   LoginError, UsernameAlreadyExistsError, EmailAlreadyExistsError,
   DatabaseCommitError, InvalidPasswordError, InvalidUsernameError,
-  UserNotFoundError, TokenError)
+  UserNotFoundError, TokenError, EmailSendingError)
 from . import auth_bp
 from .forms import (
   LoginForm, RegisterForm, VerifyUserEmailForm, ResetPasswordForm)
@@ -61,6 +61,10 @@ def register():
       form.password.errors.append(_('Invalid password'))
     except InvalidUsernameError:
       form.username.errors.append(_('Invalid username'))
+    except EmailSendingError:
+      flash(
+        _('Could not send your confirmation email now. Please try again later'),
+        category='warning')
     except Exception as e:
       current_app.logger.exception(e)
       flash(_('Something went wrong, please try again later'), category='warning')
@@ -90,6 +94,10 @@ def request_confirmation_email():
     flash(
       _('A new confirmation email has been sent. Please check your inbox'),
       category='info')
+  except EmailSendingError:
+      flash(
+        _('Could not send your confirmation email now. Please try again later'),
+        category='warning')
   except Exception as e:
     flash(_('Something went wrong, please try again later'), category='warning')
 
@@ -113,8 +121,11 @@ def request_password_reset():
         _('An email will been sent to reset you password. Please check your inbox'),
         category='info')
       return redirect(url_for('main.index'))
+    except EmailSendingError:
+      flash(
+        _('Could not send your confirmation email now. Please try again later'),
+        category='warning')
     except Exception as e:
-      print('*' * 20, e)
       flash(_('Something went wrong, please try again later'), category='warning')
   
   return render_template('auth/forgot-password.html', form=form)
@@ -136,5 +147,6 @@ def reset_password(token):
       flash(_('Invalid Token'), category='danger')
     except InvalidPasswordError:
       form.password.errors.append(_('Invalid Password'))
-      
+    except Exception as e:
+      flash(_('Something went wrong, please try again later'), category='warning')
   return render_template('auth/reset-password.html', form=form)
