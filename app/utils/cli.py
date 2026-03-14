@@ -19,12 +19,19 @@ def init_cli(app: Flask) -> None:
     from config import basedir
     from app.models import Role
     from app.models.permission import roles, default_role
+    from app.errors import DatabaseCommitError
+    
     os.makedirs(os.path.join(basedir, 'data'), exist_ok=True)
     click.echo('> Created data directory.')
     os.makedirs(os.path.join(basedir, 'tmp'), exist_ok=True)
     click.echo('> Created temporary directory.')
-    Role.set_roles(roles=roles, default=default_role)
-    click.echo('> Created new roles and updated existing ones.')
+    try:
+      Role.set_roles(roles=roles, default=default_role)
+      click.echo('> Created new roles and updated existing ones.')
+    except DatabaseCommitError as e:
+      app.logger.exception(e)
+      click.echo('> Failed to create roles.')
+    
   
   @app.cli.command()
   def test():

@@ -22,13 +22,20 @@
   
   <div class="col-lg-6 col-md-8 col-12 mt-3">
     {% if not current_user.confirmed %}
-    <div class="p-3 bg-alert rounded-2">
+    <div class="p-3 bg-alert rounded-2 mt-3">
       {{ _('Your account is not confirmed yet') }}, 
       <a href="{{ url_for('auth.request_confirmation_email') }}">
         {{ _('click here to resend confirmation email') }}.
       </a>
     </div>
     {% endif %}
+    
+    <div class="p-3 bg-alert rounded-2 mt-3">
+      <a href="{{ url_for('user.profile', username=current_user.username) }}">
+        <i class="bi bi-person-fill icon fs-5"></i>
+        {{ _('Click here to check your profile page') }}.
+      </a>
+    </div>
     
     
     <div class="mt-5 bg-mint" id="update-profile">

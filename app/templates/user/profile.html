@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ _('Profile') }} - {{ user.username }}{% endblock %}
+
+{% block content %}
+<div class="container">
+<div class="row justify-content-between">
+  <div class="col-lg-3 col-12 bg-white border border-1 mt-4 p-2">
+    <div>
+      <h4>{{ user.username }}</h4>
+      <p class="m-0">{{ _('member since') }}: <span class="time">{{ user.member_since }}</span></p>
+      <p class="m-0">{{ _('last seen') }}: <span class="time">{{ user.last_seen }}</span></p>
+    </div>
+    <div class="border-top pt-2">
+      <h6>{{ _('About me') }}</h6>
+      <p>
+        {% if user.bio %}
+          {{ user.bio }}
+        {% else %}
+          {{ _('This user did not write anything about themselves') }}
+        {% endif %}
+      </p>
+    </div>
+  </div>
+  <div class="col-lg-8 col-12 bg-white border border-1 mt-4 p-2">
+    <div>
+      <h4>{{ _('Posts') }}</h4>
+      <hr>
+      <p>{{ _('This user has no posts currently') }}</p>
+    </div>
+    <div>
+      <h4>{{ _('Comments') }}</h4>
+      <hr>
+      <p>{{ _('This user has no comments currently') }}</p>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}
