@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg bg-ink navbar-dark">
   <div class="container-fluid">
-    <a class="navbar-brand text-white" href="{{ url_for('main.index') }}">
+    <a class="navbar-brand text-white p-0" href="{{ url_for('main.index') }}">
       {{ _('Fihrist') }}
     </a>
     <button 
@@ -14,21 +14,26 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+      <ul class="navbar-nav {% if _dir == 'ltr' %}me-auto{% else %}ms-auto{% endif %} mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link text-white" href="#">Link</a>
+          <a class="nav-link text-white p-0" href="#">Link</a>
         </li>
-        
+      </ul>
+      <ul class="navbar-nav">
         <li class="nav-item dropdown">
           <a 
-              class="nav-link dropdown-toggle text-white" 
+              class="nav-link dropdown-toggle text-white p-0" 
               href="#" 
               role="button" 
               data-bs-toggle="dropdown" 
               aria-expanded="false">
-            <i class="bi bi-person-circle fs-5 icon"></i>
+            {% if current_user.is_authenticated %}
+              <img class="rounded-circle icon" src="{{ current_user.gavatar(size=26) }}">
+            {% else %}
+              <i class="bi bi-person-circle fs-5 icon"></i>
+            {% endif %}
           </a>
-          <ul class="dropdown-menu">
+          <ul class="dropdown-menu {% if _dir == 'ltr' %}dropdown-menu-end{% else %}dropdown-menu-start{% endif %}">
             {% if not current_user.is_authenticated %}
             <li>
               <a class="dropdown-item" href="{{ url_for('auth.login') }}">

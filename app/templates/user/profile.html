@@ -6,12 +6,13 @@
 <div class="container">
 <div class="row justify-content-between">
   <div class="col-lg-3 col-12 bg-white border border-1 mt-4 p-2">
-    <div>
+    <div class="text-center pb-2">
+      <img class="rounded-circle" src="{{ user.gavatar(size=96) }}">
       <h4>{{ user.username }}</h4>
       <p class="m-0">{{ _('member since') }}: <span class="time">{{ user.member_since }}</span></p>
       <p class="m-0">{{ _('last seen') }}: <span class="time">{{ user.last_seen }}</span></p>
     </div>
-    <div class="border-top pt-2">
+    <div class="border-top p-1 pt-3">
       <h6>{{ _('About me') }}</h6>
       <p>
         {% if user.bio %}

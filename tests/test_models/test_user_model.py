@@ -1,4 +1,5 @@
 import unittest
+import hashlib
 from app import create_app, db
 from app.models import User, Role, Permission
 
@@ -103,3 +104,16 @@ class TestUserModel(unittest.TestCase):
     r.add_permission(Permission.MODERATE)
     self.assertTrue(u.is_mod())
   
+  def test_md5_hash_method(self):
+    u = User(email='user@email.com')
+    hash = hashlib.md5('user@email.com'.encode('utf-8')).hexdigest()
+    
+    self.assertEquals(u.md5_hash(), hash)
+  
+  def test_gavatar_method(self):
+    u = User(email='user@email.com')
+    u.avatar_hash = u.md5_hash()
+    url = f'http://www.gravatar.com/avatar/{u.avatar_hash}?s=50&d=default&r=pg'
+    
+    with self.app.test_request_context('/'):
+      self.assertEquals(u.gavatar(50, 'default', 'pg'), url)

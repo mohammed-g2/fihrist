@@ -21,6 +21,7 @@ User (author/owner)
 - password_hash
 - member_since
 - last_seen
+- avatar_hash
 - role_id* 
 
 Role

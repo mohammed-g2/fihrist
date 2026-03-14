@@ -71,6 +71,8 @@ class AuthenticationService:
     else:
       user.role = Role.query.filter_by(default=True).first()
     
+    user.avatar_hash = user.md5_hash()
+    
     try:
       db.session.commit()
     except Exception as e:

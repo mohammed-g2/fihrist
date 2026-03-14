@@ -36,7 +36,7 @@ def create_app(config_name: str) -> Flask:
   @app.context_processor
   def create_template_context():
     _locale = locale_selector()
-    _dir = 'ar' if 'ar' in _locale else 'en'
+    _dir = 'rtl' if 'ar' in _locale else 'ltr'
     return dict(_locale=_locale, _dir=_dir, Permission=Permission)
   
   

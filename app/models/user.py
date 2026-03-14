@@ -1,5 +1,7 @@
+import hashlib
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask import request
 from flask_login import UserMixin
 from app.ext import db
 from .permission import Permission
@@ -14,6 +16,7 @@ class User(db.Model, UserMixin):
   bio = db.Column(db.Text())
   member_since = db.Column(db.DateTime, default=datetime.utcnow)
   last_seen = db.Column(db.DateTime, default=datetime.utcnow)
+  avatar_hash = db.Column(db.String(64))
   role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
   
   def __repr__(self):
@@ -44,3 +47,24 @@ class User(db.Model, UserMixin):
   def is_mod(self) -> bool:
     """Check if user have moderator permission."""
     return self.can(Permission.MODERATE)
+  
+  def md5_hash(self) -> str:
+    """Generate md5 hash using user's email."""
+    return hashlib.md5(self.email.lower().encode('utf-8')).hexdigest()
+  
+  def gavatar(self, size: int=100, generator: str='identicon', rating: str='g') -> str:
+    """
+    Generate Gravatar image url
+    
+    :param size: the image size, default 100
+    :param generator: default image generator for users without avatar in
+    Gravatar service, options:
+    '404'|'mm'|'identicon'|'monsterid'|'wavatar'|'retro'|'blank'
+    :param rating: image rating, options: 'g'|'pg'|'r'|'x'
+    """
+    if request.is_secure:
+      url = 'https://secure.gravatar.com/avatar'
+    else:
+      url = 'http://www.gravatar.com/avatar'
+    
+    return f'{url}/{self.avatar_hash}?s={size}&d={generator}&r={rating}'
