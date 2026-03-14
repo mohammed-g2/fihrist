@@ -2,6 +2,7 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app.ext import db
+from .permission import Permission
 
 class User(db.Model, UserMixin):
   __tablename__ = 'users'
@@ -27,4 +28,19 @@ class User(db.Model, UserMixin):
     self.password_hash = generate_password_hash(value)
   
   def verify_password(self, password: str) -> bool:
+    """Check if given password is the same of the user's."""
     return check_password_hash(self.password_hash, password)
+  
+  def can(self, permission: int) -> bool:
+    """Check if user have the given permission."""
+    if self.role is not None:
+      return self.role.has_permission(permission)
+    return False
+  
+  def is_admin(self) -> bool:
+    """Check if user have admin permission."""
+    return self.can(Permission.ADMIN)
+  
+  def is_mod(self) -> bool:
+    """Check if user have moderator permission."""
+    return self.can(Permission.MODERATE)

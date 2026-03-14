@@ -1,6 +1,6 @@
 import unittest
 from app import create_app, db
-from app.models import User
+from app.models import User, Role, Permission
 
 
 class TestUserModel(unittest.TestCase):
@@ -46,3 +46,60 @@ class TestUserModel(unittest.TestCase):
 
     self.assertFalse(user.verify_password('pass2'))
     self.assertTrue(user.verify_password('pass1'))
+  
+  def test_role_cascading(self):
+    role = Role(name='r1')
+    db.session.add(role)
+    db.session.commit()
+    u_1 = User(username='u1')
+    u_2 = User(username='u2')
+    u_1.role = role
+    u_2.role = role
+    db.session.add_all([u_1, u_2])
+    db.session.commit()
+    
+    self.assertCountEqual(role.users.all(), [u_1, u_2])
+    
+    db.session.delete(role)
+    db.session.commit()
+    
+    self.assertIsNotNone(User.query.filter_by(username='u1').first())
+    self.assertIsNotNone(User.query.filter_by(username='u2').first())
+    
+    self.assertIsNone(User.query.filter_by(username='u1').first().role)
+  
+  def test_can_method(self):
+    u = User()
+    self.assertFalse(u.can(Permission.WRITE))
+    
+    r = Role()
+    r.add_permission(Permission.WRITE)
+    u.role = r
+    
+    self.assertTrue(u.can(Permission.WRITE))
+    self.assertFalse(u.can(Permission.FOLLOW))
+  
+  def test_is_admin_method(self):
+    u = User()
+    self.assertFalse(u.is_admin())
+    
+    r = Role()
+    r.add_permission(Permission.WRITE)
+    u.role = r
+    self.assertFalse(u.is_admin())
+    
+    r.add_permission(Permission.ADMIN)
+    self.assertTrue(u.is_admin())
+  
+  def test_is_mod_method(self):
+    u = User()
+    self.assertFalse(u.is_mod())
+    
+    r = Role()
+    r.add_permission(Permission.WRITE)
+    u.role = r
+    self.assertFalse(u.is_mod())
+    
+    r.add_permission(Permission.MODERATE)
+    self.assertTrue(u.is_mod())
+  

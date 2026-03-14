@@ -17,10 +17,14 @@ def init_cli(app: Flask) -> None:
   def init():
     """Initialize the application."""
     from config import basedir
+    from app.models import Permission
+    from app.models.permission import roles, default_role
     os.makedirs(os.path.join(basedir, 'data'), exist_ok=True)
-    print('> Created data directory.')
+    click.echo('> Created data directory.')
     os.makedirs(os.path.join(basedir, 'tmp'), exist_ok=True)
-    print('> Created temporary directory.')
+    click.echo('> Created temporary directory.')
+    Role.set_roles(roles=roles, default=default_role)
+    click.echo('> Created new roles and updated existing ones.')
   
   @app.cli.command()
   def test():
@@ -67,5 +71,5 @@ def create_shell_context(app: Flask) -> None:
   @app.shell_context_processor
   def shell_context():
     from app.ext import db
-    from app.models import User
-    return dict(db=db, User=User, Role=Role)
+    from app.models import User, Role, Permission
+    return dict(db=db, User=User, Role=Role, Permission=Permission)
