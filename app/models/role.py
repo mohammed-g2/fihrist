@@ -1,5 +1,5 @@
 from app.ext import db
-
+from app.errors import DatabaseCommitError
 
 class Role(db.Model):
   __tablename__ = 'roles'
@@ -57,4 +57,8 @@ class Role(db.Model):
         role.add_permission(perm)
       
       db.session.add(role)
-    db.session.commit()
+    try:
+      db.session.commit()
+    except Exception as e:
+      db.session.rollback()
+      raise DatabaseCommitError(e)

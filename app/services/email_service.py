@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from app.models import User
 from app.utils.security import generate_timed_token
 from app.utils.send_email import send_email
-from app.errors import PasswordValidationError, EmailSendingError
+from app.errors import PasswordValidationError
 
 
 @dataclass
@@ -87,11 +87,9 @@ class EmailService:
       raise ValueError('Incorrect email type.')
     
     data = msg(user=user, **kwargs)
-    try:
-      send_email(
-        to=data.to, 
-        subject=data.subject, 
-        template=data.template, 
-        **data.context)
-    except Exception as e:
-      raise EmailSendingError(e)
+
+    send_email(
+      to=data.to, 
+      subject=data.subject, 
+      template=data.template, 
+      **data.context)
