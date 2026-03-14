@@ -17,7 +17,7 @@ def init_cli(app: Flask) -> None:
   def init():
     """Initialize the application."""
     from config import basedir
-    from app.models import Permission
+    from app.models import Role
     from app.models.permission import roles, default_role
     os.makedirs(os.path.join(basedir, 'data'), exist_ok=True)
     click.echo('> Created data directory.')
@@ -46,7 +46,7 @@ def init_cli(app: Flask) -> None:
     if os.system('pybabel init -i messages.pot -d app/translations -l ' + lang):
       raise RuntimeError('Initializing language failed.')
     os.remove('messages.pot')
-    print('> Language initialized.')
+    click.echo('> Language initialized.')
   
   @translate.command()
   def update():
@@ -56,14 +56,14 @@ def init_cli(app: Flask) -> None:
     if os.system('pybabel update -i messages.pot -d app/translations'):
       raise RuntimeError('Updating translation faild.')
     os.remove('messages.pot')
-    print('> Translation updated.')
+    click.echo('> Translation updated.')
   
   @translate.command()
   def compile():
     """Compile language"""
     if os.system('pybabel compile -d app/translations'):
       raise RuntimeError('Compiling language failed.')
-    print('> Translation compiled.')
+    click.echo('> Translation compiled.')
 
 
 def create_shell_context(app: Flask) -> None:
