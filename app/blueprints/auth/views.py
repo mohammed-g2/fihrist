@@ -51,7 +51,7 @@ def register():
         username=form.username.data,
         email=form.email.data,
         password=form.password.data)
-      flash(_('You can login now'), category='info')
+      flash(_('You can login now'), category='success')
       return redirect(url_for('auth.login'))
     except UsernameAlreadyExistsError:
       form.username.errors.append(_('Username already exists'))
@@ -61,10 +61,10 @@ def register():
       form.password.errors.append(_('Invalid password'))
     except InvalidUsernameError:
       form.username.errors.append(_('Invalid username'))
-    except EmailSendingError:
-      flash(
-        _('Could not send your confirmation email now. Please try again later'),
-        category='warning')
+    except EmailSendingError as e:
+      current_app.logger.exception(e)
+      flash(_('You can login now'), category='success')
+      return redirect(url_for('auth.login'))
     except Exception as e:
       current_app.logger.exception(e)
       flash(_('Something went wrong, please try again later'), category='warning')
