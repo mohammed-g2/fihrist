@@ -1,7 +1,7 @@
 from flask import current_app
 from app.ext import db
 from app.utils.security import decode_timed_token
-from app.models import User
+from app.models import User, Role
 from app.models.value_objects import Username, Password, Email
 from app.errors import (
   UserNotFoundError, PasswordValidationError, EmailAlreadyExistsError,
@@ -65,6 +65,12 @@ class AuthenticationService:
       email=_email.value, 
       password=_password.value)
     db.session.add(user)
+    
+    if current_app.config['ADMIN_EMAIL'] == _email.value:
+      user.role = Role.query.filter_by(name='admin').first()
+    else:
+      user.role = Role.query.filter_by(default=True).first()
+    
     try:
       db.session.commit()
     except Exception as e:

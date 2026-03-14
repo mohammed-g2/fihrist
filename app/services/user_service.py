@@ -1,4 +1,3 @@
-from email_validator import validate_email, EmailNotValidError
 from app.ext import db
 from app.models import User
 from app.models.value_objects import Username, Email, Password
