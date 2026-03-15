@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ _('Workspace') }}{% endblock %}
+
+{% block head %}
+  {{ super() }}
+{% endblock %}
+
+{% block content %}
+<div class="container pt-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex justify-content-between">
+        <h2>{{ _('Workspace') }}</h2>
+        <a href="#" class="btn btn-slate" style="line-height:2;">
+          <i class="bi bi-plus-lg icon"></i>
+          {{ _('New Post') }}
+        </a>
+      </div>
+    </div>
+  </div>
+  
+  <div class="row">
+    <div class="col-12">
+      
+    </div>
+  </div>
+</div>
+{% endblock %}

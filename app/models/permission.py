@@ -9,9 +9,6 @@ class Permission:
 roles = {
   'banned': [],
   'user': [
-    Permission.FOLLOW, Permission.COMMENT
-  ],
-  'writer': [
     Permission.FOLLOW, Permission.COMMENT, Permission.WRITE
   ],
   'moderator': [

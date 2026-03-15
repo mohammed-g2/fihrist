@@ -7,7 +7,7 @@ class Role(db.Model):
   name = db.Column(db.String(32), unique=True)
   default = db.Column(db.Boolean, default=False)
   permissions = db.Column(db.Integer)
-  users = db.relationship('User', backref='role', lazy='dynamic')
+  users = db.relationship('User', back_populates='role', lazy='dynamic')
   
   def __repr__(self):
     return f'<Role { self.name }>'

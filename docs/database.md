@@ -2,7 +2,7 @@ Relationships
 `
 User 1---* Post
 User *---1 Role
-User 1---* Blog
+User 1---1 Blog
 Blog 1---* Posts
 Blog *---* BlogMember
 User 1---1 BlogMember

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ _('New Blog') }}{% endblock %}
+
+{% block head %}
+  {{ super() }}
+{% endblock %}
+
+{% block content %}
+<div class="container pt-4 h-100">
+  <div class="row h-100">
+    <div class="col-12 h-100 d-flex align-items-center justify-content-center">
+      <div class="text-center">
+        <h5>{{ _('You do not have a blog') }}</h5>
+        <p>{{ _('Create a new one and start writing') }}</p>
+        <a href="{{ url_for('blog.create') }}" class="btn btn-slate">
+          <i class="bi bi-plus-lg icon"></i>
+          Create Blog
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</div>
+{% endblock %}

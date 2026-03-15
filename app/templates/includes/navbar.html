@@ -47,6 +47,12 @@
             </li>
             {% else %}
             <li>
+              <a class="dropdown-item" href="{{ url_for('blog.index') }}">
+                <i class="bi bi-pencil-square icon"></i>
+                {{ _('Blog') }}
+              </a>
+            </li>
+            <li>
               <a class="dropdown-item" href="{{ url_for('user.settings') }}">
                 <i class="bi bi-gear-fill icon"></i>
                 {{ _('Settings') }}

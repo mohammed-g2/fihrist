@@ -18,6 +18,8 @@ class User(db.Model, UserMixin):
   last_seen = db.Column(db.DateTime, default=datetime.utcnow)
   avatar_hash = db.Column(db.String(64))
   role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
+  role = db.relationship('Role', back_populates='users')
+  blog = db.relationship('Blog', back_populates='user', uselist=False)
   
   def __repr__(self):
     return f'<User { self.username }>'

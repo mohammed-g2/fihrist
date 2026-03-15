@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% from 'includes/macros.html' import form_field %}
+
+{% block title %}{{ _('Create Blog') }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+<div class="row d-flex align-items-center justify-content-center">
+  <div class="col-lg-5 col-md-8 col-12 mt-5 mb-5">
+    <h3 class="mt-3 mt-lg-5 text-center">
+      {{ _('Create Blog') }}
+      <hr>
+    </h3>
+    <form class="mt-4" method="post">
+      {{ form.hidden_tag() }}
+
+      <div class="mb-5">
+        {{ form_field(form.name, id='name-input', aria_description='name-help') }}
+        <div id="name-help" class="form-text">
+          {{ _('Blog name can only contain letters, numbers and spaces') }}
+        </div>
+      </div>
+      
+      <div class="mb-5">
+        {{ form_field(form.description, id='description-input') }}
+      </div>
+      
+      <div class="d-grid w-75 mx-auto">{{ form.submit(class='btn btn-ink') }}</div>
+    </form>
+</div>
+</div>
+{% endblock %}
