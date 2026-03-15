@@ -1,3 +1,4 @@
+from datetime import datetime
 from app.ext import db
 from app.models import User
 from app.models.value_objects import Username, Email, Password
@@ -155,3 +156,19 @@ class UserService:
       raise DatabaseCommitError(e)
     
     return True
+  
+  @classmethod
+  def ping(cls, user: User) -> None:
+    """
+    Update user's last seen
+    
+    :param user: `User` model instance
+    :raises DatabaseCommitError: if failed to commit to database
+    """
+    user.last_seen = datetime.utcnow()
+    db.session.add(user)
+    try:
+      db.session.commit()
+    except Exception as e:
+      db.session.rollback()
+      raise DatabaseCommitError(e)

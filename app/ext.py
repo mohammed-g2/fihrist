@@ -18,12 +18,16 @@ login_manager.login_message  = _('Please login to view this page.')
 login_manager.login_message_category = 'info'
 login_manager.session_protection = 'strong'
 
+
 def init_flask_login() -> None:
   """
-  Initialize the flask-login extension, attach user_loader and
-  unauthorized_handler
+  Initialize the flask-login extension, attach user_loader,
+  anonymous user and unauthorized_handler
   """
-  from app.models import User
+  from app.models import User, AnonymousUser
+  
+  login_manager.anonymous_user = AnonymousUser
+  
   @login_manager.user_loader
   def load_user(id):
     return User.query.get(id)
