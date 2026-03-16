@@ -28,10 +28,32 @@ def init_cli(app: Flask) -> None:
     try:
       Role.set_roles(roles=roles, default=default_role)
       click.echo('> Created new roles and updated existing ones.')
-    except DatabaseCommitError as e:
+    except Exception as e:
       app.logger.exception(e)
       click.echo('> Failed to create roles.')
-    
+  
+  @app.cli.command()
+  def fake_data():
+    """Populate the database with fake data."""
+    from app.ext import db
+    from app.models import Role
+    from app.models.permission import roles, default_role
+    from app.scripts.fake_data import (
+      create_users, create_blogs, create_posts)
+    count = 100
+    if app.config['ENV'] != 'development':
+      click.echo('> Not in development environment.')
+    db.drop_all()
+    db.create_all()
+    click.echo('> Dropped and recreated database.')
+    Role.set_roles(roles=roles, default=default_role)
+    click.echo('> Created user roles.')
+    create_users(count)
+    click.echo(f'> Created users, count: { count }')
+    create_blogs()
+    click.echo(f'> Created blogs, count: { count }')
+    create_posts(count)
+    click.echo(f'> Created posts, count: { count }')
   
   @app.cli.command()
   def test():

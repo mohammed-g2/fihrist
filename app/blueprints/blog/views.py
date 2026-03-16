@@ -78,6 +78,8 @@ def create_post():
         status='draft')
       flash(_('Post Saved.'), category='success')
       return redirect(url_for('blog.workspace'))
+    except ValueError:
+      flash(_('Title already exists in database'), category='warning')
     except Exception as e:
       current_app.logger.exception(e)
       flash(_('Something went wrong, please try again later'), category='warning')
@@ -98,6 +100,8 @@ def edit_post(id):
       srv.update_post(post, title=form.title.data, content=form.content.data)
       flash(_('Post Updated'), category='success')
       return redirect(url_for('blog.workspace'))
+    except ValueError:
+      flash(_('Title already exists in database'), category='warning')
     except Exception as e:
       current_app.logger.exception(e)
       flash(_('Something went wrong, please try again later'), category='warning')

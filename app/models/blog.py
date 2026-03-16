@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 from app.ext import db
 
@@ -15,3 +16,10 @@ class Blog(db.Model):
   
   def __repr__(self):
     return f'<Blog { self.name }>'
+  
+  def create_slug(self) -> None:
+    # remove all special characters, keep letters, numbers and spaces
+    slug = re.sub(r'[^a-zA-Z0-9 ]', '', self.name.strip())
+    # replace spaces with hyphens
+    slug = slug.replace(' ', '-').lower()
+    self.slug = slug

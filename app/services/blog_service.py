@@ -23,8 +23,8 @@ class BlogService:
     if not re.fullmatch(r'^[a-zA-Z0-9 ]+$', name):
       raise ValueError('Blog name can only contain letters, numbers and spaces')
     blog = Blog(
-      name=name, description=description, user=user)
-    blog.slug = name.replace(' ', '-').strip('-').lower()
+      name=name.strip(), description=description.strip(), user=user)
+    blog.create_slug()
     
     db.session.add(blog)
     try:
@@ -48,17 +48,17 @@ class BlogService:
     
     :raises DatabaseCommitError: if failed to commit to database
     """
+    post_found = Post.query.filter_by(title=title).first()
+    if post_found:
+      raise ValueError('Title already exists in database')
+    
     post = Post(
       user=user, 
       title=title.strip(), 
       content=content.strip(), 
       status=status)
-    # remove all special characters, keep letters, numbers and spaces
-    slug = re.sub(r'[^a-zA-Z0-9 ]', '', title.strip())
-    # replace spaces with hyphens
-    slug = slug.replace(' ', '-').lower()
-    post.slug = slug
     post.blog = user.blog
+    post.create_slug()
     
     db.session.add(post)
     try:
@@ -72,12 +72,15 @@ class BlogService:
   @classmethod
   def update_post(cls, post: Post, title: str, content: str) -> bool:
     """"""
-    slug = re.sub(r'[^a-zA-Z0-9 ]', '', title.strip())
-    slug = slug.replace(' ', '-').lower()
+    post_found = Post.query.filter_by(title=title).first()
+    if post_found:
+      raise ValueError('Title already exists in database')
+    
     post.title = title.strip()
     post.content = content.strip()
-    post.slug = slug
     post.updated_at = datetime.utcnow()
+    post.create_slug()
+    
     db.session.add(post)
     try:
       db.session.commit()
