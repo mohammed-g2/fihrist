@@ -5,6 +5,7 @@ from app.models import Permission, Post
 from app.services import BlogService
 from app.utils import paginate
 from app.utils.decorators import permission_required
+from app.errors import InvalidPostTitle, InvalidBlogName
 from . import blog_bp
 from .forms import CreateBlogForm, CreatePostForm
 
@@ -42,7 +43,7 @@ def create():
         description=form.description.data,
         user=current_user._get_current_object())
       return redirect(url_for('blog.workspace'))
-    except ValueError as e:
+    except InvalidBlogName as e:
       form.name.errors.append(e)
     except Exception as e:
       current_app.logger.exception(e)
@@ -83,6 +84,8 @@ def create_post():
       return redirect(url_for('blog.workspace'))
     except ValueError:
       flash(_('Title already exists'), category='warning')
+    except InvalidPostTitle:
+      flash(_('Title can only have letters, numbers and spaces'), category='warning')
     except Exception as e:
       current_app.logger.exception(e)
       flash(_('Something went wrong, please try again later'), category='warning')
@@ -108,6 +111,8 @@ def edit_post(id):
       return redirect(url_for('blog.workspace'))
     except ValueError:
       flash(_('Title already exists'), category='warning')
+    except InvalidPostTitle:
+      flash(_('Title can only have letters, numbers and spaces'), category='warning')
     except Exception as e:
       current_app.logger.exception(e)
       flash(_('Something went wrong, please try again later'), category='warning')

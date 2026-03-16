@@ -2,7 +2,7 @@ import re
 from datetime import datetime
 from app.ext import db
 from app.models import User, Blog, Post
-from app.errors import DatabaseCommitError
+from app.errors import DatabaseCommitError, InvalidBlogName, InvalidPostTitle
 
  
 class BlogService:
@@ -21,7 +21,7 @@ class BlogService:
     :raises DatabaseCommitError: if failed to commit to database
     """
     if not re.fullmatch(r'^[a-zA-Z0-9 ]+$', name):
-      raise ValueError('Blog name can only contain letters, numbers and spaces')
+      raise InvalidBlogName('Blog name can only contain letters, numbers and spaces')
     blog = Blog(
       name=name.strip(), description=description.strip(), user=user)
     blog.create_slug()
@@ -48,6 +48,10 @@ class BlogService:
     
     :raises DatabaseCommitError: if failed to commit to database
     """
+    if not re.fullmatch(r'^[a-zA-Z0-9 ]+$', title):
+      raise InvalidPostTitle(
+        'Post title can only contain letters, numbers and spaces')
+      
     post_found = Post.query.filter_by(title=title).first()
     if post_found:
       raise ValueError('Title already exists in database')
@@ -72,6 +76,10 @@ class BlogService:
   @classmethod
   def update_post(cls, post: Post, title: str, content: str) -> bool:
     """"""
+    if not re.fullmatch(r'^[a-zA-Z0-9 ]+$', title):
+      raise InvalidPostTitle(
+        'Post title can only contain letters, numbers and spaces')
+    
     if title != post.title:
       post_found = Post.query.filter_by(title=title).first()
       if post_found:

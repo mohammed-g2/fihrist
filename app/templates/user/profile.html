@@ -32,7 +32,7 @@
         {% for post in posts %}
           <a href="{{ url_for('blog.get_post', slug=post.slug) }}" class="border ps-2 mt-3 d-block text-decoration-none">
             <h5 class="mb-0">{{ post.title }}</h5>
-            <p class="ps-2">{{ post.content }}</p>
+            <p class="ps-2">{{ post.plain_content() }}...</p>
           </a>
         {% endfor %}
       {% endif %}

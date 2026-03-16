@@ -82,3 +82,8 @@ class EmailSendingError(ProcessError):
   """Raised when failed to send email"""
   def __init__(self, message='Failed to send email'):
     super().__init__(message)
+
+# General errors
+class InvalidPostTitle(Exception): pass
+
+class InvalidBlogName(Exception): pass

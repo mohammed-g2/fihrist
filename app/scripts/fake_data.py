@@ -59,7 +59,7 @@ def create_posts(count: int=100) -> None:
     user = User.query.offset(randint(0, user_count - 1)).first()
     post = Post(
       title=fake.sentence(nb_words=10),
-      content=fake.text(),
+      content=fake.text(max_nb_chars=400),
       status='published',
       created_at=fake.past_date(),
       blog=user.blog,

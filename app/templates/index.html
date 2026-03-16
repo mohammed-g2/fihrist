@@ -23,7 +23,7 @@
                 class="text-decoration-none d-block"
                 href="{{ url_for('blog.get_post', slug=post.slug) }}">
                 <h5 class="card-title">{{ post.title }}</h5>
-                <p class="card-text">{{ post.content[:40] }}...</p>
+                <p class="card-text">{{ post.plain_content() }}...</p>
               </a>
               <p class="card-text mb-0">
                 <small class="text-body-secondary">

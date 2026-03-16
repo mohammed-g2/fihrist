@@ -12,21 +12,20 @@
   {{ super() }}
   <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
   <script>
-    window.addEventListener('load', ev => {
-      const form = document.getElementById('create-post');
-      const quill = new Quill('#editor', {
-        theme: 'snow',
-        placeholder: 'Compose an Epic...',
-      });
-      let text = '{{ form.content.data|safe }}';
-      if (text !== 'None') {
-        quill.root.innerHTML = text;
-      }
-      form.addEventListener('formdata', ev => {
-          ev.formData.append('content', quill.root.innerHTML);
-      });
+    const form = document.getElementById('create-post');
+    const quill = new Quill('#editor', {
+      theme: 'snow',
+      placeholder: 'Compose an Epic...', 
     });
     
+    let text = '{{ form.content.data|safe }}';
+    if (text === 'None') {
+      text = '';
+    }
+    quill.root.innerHTML = text;
+    form.addEventListener('formdata', ev => {
+      ev.formData.append('content', quill.root.innerHTML);
+    });
   </script>
 {% endblock %}
 
@@ -45,7 +44,7 @@
       </div>
       
       {#
-      {{ form.content(class='form-control', id='content', placeholder=form.content.label.text) }}
+      {{ form.content(id='content', style='display:none;') }}
       #}
       <div class="d-grid w-25 mx-auto">{{ form.submit(class='btn btn-ink') }}</div>
     </form>
