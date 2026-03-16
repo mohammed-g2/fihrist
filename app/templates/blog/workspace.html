@@ -41,7 +41,8 @@
             <p class="mb-0">Status: <span class="status-{{ post.status }}">{{ post.status }}</span></p>
           </div>
           
-          <p class="ps-2 style-reset">{{ post.content|safe }}</p>
+          <p class="ps-2">{{ post.content }}</p>
+          <p class="ps-2">{{ post.slug }}</p>
         </a>
       {% endfor %}
     </div>

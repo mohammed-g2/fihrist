@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 from app.ext import db
 from app.models import User, Blog, Post
 from app.errors import DatabaseCommitError
@@ -76,7 +77,7 @@ class BlogService:
     post.title = title.strip()
     post.content = content.strip()
     post.slug = slug
-    
+    post.updated_at = datetime.utcnow()
     db.session.add(post)
     try:
       db.session.commit()

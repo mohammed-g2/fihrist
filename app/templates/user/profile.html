@@ -24,14 +24,23 @@
     </div>
   </div>
   <div class="col-lg-8 col-12 bg-white border border-1 mt-4 p-2">
-    <div>
+    <div class="mb-3">
       <h4>{{ _('Posts') }}</h4>
-      <hr>
-      <p>{{ _('This user has no posts currently') }}</p>
+      {% if posts == [] %}
+        <p>{{ _('This user has no posts currently') }}</p>
+      {% else %}
+        {% for post in posts %}
+          <a href="{{ url_for('blog.get_post', slug=post.slug) }}" class="border ps-2 mt-3 d-block text-decoration-none">
+            <h5 class="mb-0">{{ post.title }}</h5>
+            <p class="ps-2">{{ post.content }}</p>
+          </a>
+        {% endfor %}
+      {% endif %}
     </div>
+    <hr>
     <div>
       <h4>{{ _('Comments') }}</h4>
-      <hr>
+      
       <p>{{ _('This user has no comments currently') }}</p>
     </div>
   </div>

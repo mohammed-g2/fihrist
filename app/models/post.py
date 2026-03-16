@@ -7,7 +7,7 @@ class Post(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   title = db.Column(db.String(128), index=True)
   content = db.Column(db.Text())
-  slug = db.Column(db.String())
+  slug = db.Column(db.String(), index=True)
   status = db.Column(db.String()) # draft - published
   created_at = db.Column(db.DateTime(), default=datetime.utcnow)
   updated_at = db.Column(db.DateTime())

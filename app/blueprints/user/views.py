@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, url_for, flash, current_app
 from flask_login import login_required, current_user
 from flask_babel import _
-from app.models import User
+from app.models import User, Post
 from app.services import UserService
 from app.errors import (
   InvalidUsernameError, UsernameAlreadyExistsError, TokenError,
@@ -134,5 +134,5 @@ def change_password(token):
 @user_bp.route('/profile/<username>')
 def profile(username):
   user = User.query.filter_by(username=username).first_or_404()
-  
-  return render_template('user/profile.html', user=user)
+  posts = user.posts.order_by(Post.created_at.desc()).all()
+  return render_template('user/profile.html', user=user, posts=posts)

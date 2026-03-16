@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block head %}
+  {{ super() }}
+{% endblock %}
+
+{% block content %}
+<div class="container pt-4">
+  <div class="row">
+    <div class="col-12">
+      <h3>{{ post.title }}</h3>
+      <div>
+        <p>Created at: <span class="time">{{ post.created_at }}</span></p>
+        {% if post.updated_at %}
+          <p>Updated at: <span class="time">{{ post.updated_at }}</span></p>
+        {% endif %}
+        <p>Author: <a href="{{ url_for('user.profile', username=post.user.username) }}">@{{ post.user.username }}</a></p>
+      </div>
+      <div>{{ post.content|safe }}</div>
+    </div>
+  </div>
+</div>
+{% endblock %}

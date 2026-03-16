@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, current_app, flash
+from flask import render_template, redirect, url_for, current_app, flash, request
 from flask_login import login_required, current_user
 from flask_babel import _
 from app.models import Permission, Post
@@ -55,7 +55,7 @@ def create():
 def workspace():
   if current_user.blog is None:
     return redirect(url_for('blog.blank'))
-  posts = current_user.posts.all()
+  posts = current_user.posts.order_by(Post.created_at.desc()).all()
   return render_template('blog/workspace.html', posts=posts)
 
 
@@ -106,3 +106,10 @@ def edit_post(id):
   form.content.data = post.content
   
   return render_template('blog/edit-post.html', form=form, post=post)
+
+
+@blog_bp.route('/post/')
+def get_post():
+  post = Post.query.filter_by(slug=request.args.get('slug')).first_or_404()
+  
+  return render_template('blog/post.html', post=post)
