@@ -1,11 +1,11 @@
 from flask import render_template, redirect, url_for, current_app, flash
 from flask_login import login_required, current_user
 from flask_babel import _
-from app.models import Permission
+from app.models import Permission, Post
 from app.services import BlogService
 from app.utils.decorators import permission_required
 from . import blog_bp
-from .forms import CreateBlogForm
+from .forms import CreateBlogForm, CreatePostForm
 
 
 @blog_bp.route('/')
@@ -55,4 +55,54 @@ def create():
 def workspace():
   if current_user.blog is None:
     return redirect(url_for('blog.blank'))
-  return render_template('blog/workspace.html')
+  posts = current_user.posts.all()
+  return render_template('blog/workspace.html', posts=posts)
+
+
+@blog_bp.route('/create-post', methods=['GET', 'POST'])
+@login_required
+@permission_required(Permission.WRITE)
+def create_post():
+  if current_user.blog is None:
+    return redirect(url_for('blog.blank'))
+  
+  form = CreatePostForm()
+  
+  if form.validate_on_submit():
+    srv = BlogService
+    try:
+      srv.create_post(
+        user=current_user._get_current_object(),
+        title=form.title.data,
+        content=form.content.data,
+        status='draft')
+      flash(_('Post Saved.'), category='success')
+      return redirect(url_for('blog.workspace'))
+    except Exception as e:
+      current_app.logger.exception(e)
+      flash(_('Something went wrong, please try again later'), category='warning')
+  
+  return render_template('blog/create-post.html', form=form)
+
+
+@blog_bp.route('/edit-post/<int:id>', methods=['GET', 'POST'])
+@login_required
+@permission_required(Permission.WRITE)
+def edit_post(id):
+  post = Post.query.get_or_404(id)
+  form = CreatePostForm()
+  
+  if form.validate_on_submit():
+    srv = BlogService
+    try:
+      srv.update_post(post, title=form.title.data, content=form.content.data)
+      flash(_('Post Updated'), category='success')
+      return redirect(url_for('blog.workspace'))
+    except Exception as e:
+      current_app.logger.exception(e)
+      flash(_('Something went wrong, please try again later'), category='warning')
+  
+  form.title.data = post.title
+  form.content.data = post.content
+  
+  return render_template('blog/edit-post.html', form=form, post=post)

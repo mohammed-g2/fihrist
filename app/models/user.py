@@ -20,6 +20,7 @@ class User(db.Model, UserMixin):
   role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
   role = db.relationship('Role', back_populates='users')
   blog = db.relationship('Blog', back_populates='user', uselist=False)
+  posts = db.relationship('Post', back_populates='user', lazy='dynamic')
   
   def __repr__(self):
     return f'<User { self.username }>'

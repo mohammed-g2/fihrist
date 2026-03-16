@@ -31,7 +31,7 @@ def create_app(config_name: str) -> Flask:
     migrate.init_app(app, db)
   
   with app.app_context():
-    from app.models import User, Role, Permission, Blog
+    from app.models import User, Role, Permission, Blog, Post
   
   @app.context_processor
   def create_template_context():

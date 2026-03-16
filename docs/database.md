@@ -51,8 +51,6 @@ Post
 - title
 - slug
 - content
-- image_url
-- image_alt_text
 - status (draft/published)
 - created_at
 - updated_at

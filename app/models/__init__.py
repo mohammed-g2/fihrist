@@ -3,3 +3,4 @@ from .anonymous_user import AnonymousUser
 from .role import Role
 from .permission import Permission
 from .blog import Blog
+from .post import Post

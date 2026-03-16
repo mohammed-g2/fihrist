@@ -1,0 +1,13 @@
+
+#title, #content {
+  border: none;
+  border-radius: 0;
+}
+
+#title {
+  font-size: 2em;
+}
+
+#content {
+  resize: none;
+}

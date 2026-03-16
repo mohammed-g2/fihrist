@@ -4,6 +4,18 @@
 
 {% block head %}
   {{ super() }}
+  
+  <style>
+    .status-draft {
+      color: var(--alert);
+      font-weight: bold;
+    }
+    
+    .status-published {
+      color: green;
+      font-weight: bold;
+    }
+  </style>
 {% endblock %}
 
 {% block content %}
@@ -12,7 +24,7 @@
     <div class="col-12">
       <div class="d-flex justify-content-between">
         <h2>{{ _('Workspace') }}</h2>
-        <a href="#" class="btn btn-slate" style="line-height:2;">
+        <a href="{{ url_for('blog.create_post') }}" class="btn btn-slate" style="line-height:2;">
           <i class="bi bi-plus-lg icon"></i>
           {{ _('New Post') }}
         </a>
@@ -21,8 +33,17 @@
   </div>
   
   <div class="row">
-    <div class="col-12">
-      
+    <div class="col-md-8 col-12">
+      {% for post in posts %}
+        <a class="border border-1 ps-2 mt-3 d-block text-decoration-none" href="{{ url_for('blog.edit_post', id=post.id) }}">
+          <div class="d-flex justify-content-between p-2">
+            <h5 class="mb-0">{{ post.title }}</h5>
+            <p class="mb-0">Status: <span class="status-{{ post.status }}">{{ post.status }}</span></p>
+          </div>
+          
+          <p class="ps-2 style-reset">{{ post.content|safe }}</p>
+        </a>
+      {% endfor %}
     </div>
   </div>
 </div>

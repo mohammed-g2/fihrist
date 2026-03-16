@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ _('Create Post') }}{% endblock %}
+
+{% block head %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/create-post-form.css') }}">
+  <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+{% endblock %}
+
+{% block js %}
+  {{ super() }}
+  <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+  <script>
+    const quill = new Quill('#editor', {
+      theme: 'snow',
+      placeholder: 'Compose an Epic...', 
+    });
+    
+    const form = document.getElementById('create-post');
+    form.addEventListener('formdata', ev => {
+      ev.formData.append('content', quill.root.innerHTML);
+    });/*
+    form.onsubmit = function() {
+      const content = document.getElementById('content');
+      content.value = quill.root.innerHTML;
+      
+      return true;
+    };*/
+  </script>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid m-0 p-0 h-100">
+<div class="row h-100">
+  <div class="col-12 h-100">
+    <form method="post" class="h-100" id="create-post">
+      {{ form.hidden_tag() }}
+
+      <div>
+        {{ form.title(class='form-control', id='title', placeholder=form.title.label.text) }}
+      </div>
+      
+      <div class="mb-5 vh-100" id="editor" style="font-size:16px;">
+      </div>
+      
+      {#
+      {{ form.content(class='form-control', id='content', placeholder=form.content.label.text) }}
+      #}
+      <div class="d-grid w-25 mx-auto">{{ form.submit(class='btn btn-ink') }}</div>
+    </form>
+</div>
+</div>
+{% endblock %}
