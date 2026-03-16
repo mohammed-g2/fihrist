@@ -72,9 +72,10 @@ class BlogService:
   @classmethod
   def update_post(cls, post: Post, title: str, content: str) -> bool:
     """"""
-    post_found = Post.query.filter_by(title=title).first()
-    if post_found:
-      raise ValueError('Title already exists in database')
+    if title != post.title:
+      post_found = Post.query.filter_by(title=title).first()
+      if post_found:
+        raise ValueError('Title already exists in database')
     
     post.title = title.strip()
     post.content = content.strip()

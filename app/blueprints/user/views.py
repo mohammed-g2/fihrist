@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from flask_babel import _
 from app.models import User, Post
 from app.services import UserService
+from app.utils import paginate
 from app.errors import (
   InvalidUsernameError, UsernameAlreadyExistsError, TokenError,
   EmailAlreadyExistsError, InvalidEmailError, PasswordValidationError,
@@ -134,5 +135,7 @@ def change_password(token):
 @user_bp.route('/profile/<username>')
 def profile(username):
   user = User.query.filter_by(username=username).first_or_404()
-  posts = user.posts.order_by(Post.created_at.desc()).all()
-  return render_template('user/profile.html', user=user, posts=posts)
+  page = request.args.get('page', 1, type=int)
+  p = paginate(user.posts, Post, page)
+  return render_template(
+    'user/profile.html', user=user, posts=p['items'], pagination=p['pagination'])

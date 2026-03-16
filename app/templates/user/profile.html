@@ -9,7 +9,7 @@
     <div class="text-center pb-2">
       <img class="rounded-circle" src="{{ user.gavatar(size=96) }}">
       <h4>{{ user.username }}</h4>
-      <p class="m-0">{{ _('member since') }}: <span class="time">{{ user.member_since }}</span></p>
+      <p class="m-0">{{ _('member since') }}: <span class="time">{{ user.created_at }}</span></p>
       <p class="m-0">{{ _('last seen') }}: <span class="time">{{ user.last_seen }}</span></p>
     </div>
     <div class="border-top p-1 pt-3">

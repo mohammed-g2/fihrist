@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from flask_babel import _
 from app.models import Permission, Post
 from app.services import BlogService
+from app.utils import paginate
 from app.utils.decorators import permission_required
 from . import blog_bp
 from .forms import CreateBlogForm, CreatePostForm
@@ -55,8 +56,10 @@ def create():
 def workspace():
   if current_user.blog is None:
     return redirect(url_for('blog.blank'))
-  posts = current_user.posts.order_by(Post.created_at.desc()).all()
-  return render_template('blog/workspace.html', posts=posts)
+  page = request.args.get('page', 1, type=int)
+  p = paginate(current_user.posts, Post, page)
+  return render_template(
+    'blog/workspace.html', posts=p['items'], pagination=p['pagination'])
 
 
 @blog_bp.route('/create-post', methods=['GET', 'POST'])
@@ -79,11 +82,11 @@ def create_post():
       flash(_('Post Saved.'), category='success')
       return redirect(url_for('blog.workspace'))
     except ValueError:
-      flash(_('Title already exists in database'), category='warning')
+      flash(_('Title already exists'), category='warning')
     except Exception as e:
       current_app.logger.exception(e)
       flash(_('Something went wrong, please try again later'), category='warning')
-  
+
   return render_template('blog/create-post.html', form=form)
 
 
@@ -92,6 +95,9 @@ def create_post():
 @permission_required(Permission.WRITE)
 def edit_post(id):
   post = Post.query.get_or_404(id)
+  if post.user.id != current_user.id:
+    return redirect(url_for('blog.index'))
+
   form = CreatePostForm()
   
   if form.validate_on_submit():
@@ -101,7 +107,7 @@ def edit_post(id):
       flash(_('Post Updated'), category='success')
       return redirect(url_for('blog.workspace'))
     except ValueError:
-      flash(_('Title already exists in database'), category='warning')
+      flash(_('Title already exists'), category='warning')
     except Exception as e:
       current_app.logger.exception(e)
       flash(_('Something went wrong, please try again later'), category='warning')

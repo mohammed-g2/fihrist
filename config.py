@@ -12,6 +12,7 @@ class Config:
   ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL')
   ENV = os.environ.get('ENV')
   LANGUAGES = ['en', 'ar']
+  ITEMS_PER_PAGE = 5
   # Mail Server config
   MAIL_SERVER = os.environ.get('MAIL_SERVER')
   MAIL_PORT = int(os.environ.get('MAIL_PORT'))

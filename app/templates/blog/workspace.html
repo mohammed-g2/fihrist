@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% from 'includes/macros.html' import pagination_widget %}
 {% block title %}{{ _('Workspace') }}{% endblock %}
 
 {% block head %}
@@ -19,7 +19,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="container pt-4">
+<div class="container d-flex flex-column h-100 pt-4">
   <div class="row">
     <div class="col-12">
       <div class="d-flex justify-content-between">
@@ -36,15 +36,32 @@
     <div class="col-md-8 col-12">
       {% for post in posts %}
         <a class="border border-1 ps-2 mt-3 d-block text-decoration-none" href="{{ url_for('blog.edit_post', id=post.id) }}">
-          <div class="d-flex justify-content-between p-2">
-            <h5 class="mb-0">{{ post.title }}</h5>
-            <p class="mb-0">Status: <span class="status-{{ post.status }}">{{ post.status }}</span></p>
+          <div class="row p-2">
+            <h5 class="mb-0 col-lg-10 col-md-9">{{ post.title }}</h5>
+            <p class="mb-0 col-lg-2 col-md-3">
+              <span class="status-{{ post.status }}">
+                {% if post.status == 'published' %}
+                  <i class="bi bi-check-circle-fill"></i>
+                {% else %}
+                  <i class="bi bi-dash-circle-fill"></i>
+                {% endif %}
+                {{ post.status }}
+              </span></p>
           </div>
           
-          <p class="ps-2">{{ post.content }}</p>
+          <p class="ps-2">
+            {% if post.content %}
+              {{ post.content[:80] }}...
+            {% endif %}
+          </p>
         </a>
       {% endfor %}
     </div>
   </div>
+  
+  <div class="row mt-auto">
+    {{ pagination_widget(pagination=pagination, endpoint='blog.workspace') }}
+  </div>
+  
 </div>
 {% endblock %}

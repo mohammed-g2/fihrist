@@ -12,21 +12,21 @@
   {{ super() }}
   <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
   <script>
-    const quill = new Quill('#editor', {
-      theme: 'snow',
-      placeholder: 'Compose an Epic...', 
+    window.addEventListener('load', ev => {
+      const form = document.getElementById('create-post');
+      const quill = new Quill('#editor', {
+        theme: 'snow',
+        placeholder: 'Compose an Epic...',
+      });
+      let text = '{{ form.content.data|safe }}';
+      if (text !== 'None') {
+        quill.root.innerHTML = text;
+      }
+      form.addEventListener('formdata', ev => {
+          ev.formData.append('content', quill.root.innerHTML);
+      });
     });
     
-    const form = document.getElementById('create-post');
-    form.addEventListener('formdata', ev => {
-      ev.formData.append('content', quill.root.innerHTML);
-    });/*
-    form.onsubmit = function() {
-      const content = document.getElementById('content');
-      content.value = quill.root.innerHTML;
-      
-      return true;
-    };*/
   </script>
 {% endblock %}
 

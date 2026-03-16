@@ -13,18 +13,24 @@ def init_cli(app: Flask) -> None:
   :param app: application instance
   """
   
-  @app.cli.command()
+  @app.cli.group()
   def init():
     """Initialize the application."""
+  
+  @init.command()
+  def dirs():
+    """Create directories needed for the application."""
     from config import basedir
-    from app.models import Role
-    from app.models.permission import roles, default_role
-    from app.errors import DatabaseCommitError
-    
     os.makedirs(os.path.join(basedir, 'data'), exist_ok=True)
     click.echo('> Created data directory.')
     os.makedirs(os.path.join(basedir, 'tmp'), exist_ok=True)
     click.echo('> Created temporary directory.')
+  
+  @init.command()
+  def roles():
+    """Create or update user roles."""
+    from app.models import Role
+    from app.models.permission import roles, default_role
     try:
       Role.set_roles(roles=roles, default=default_role)
       click.echo('> Created new roles and updated existing ones.')

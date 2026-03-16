@@ -12,12 +12,13 @@
   {{ super() }}
   <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
   <script>
+    const form = document.getElementById('create-post');
     const quill = new Quill('#editor', {
       theme: 'snow',
       placeholder: 'Compose an Epic...', 
     });
     
-    const form = document.getElementById('create-post');
+    quill.root.innerHTML = '{{ form.content.data|safe }}';
     form.addEventListener('formdata', ev => {
       ev.formData.append('content', quill.root.innerHTML);
     });
@@ -40,7 +41,6 @@
       </div>
       
       <div class="mb-5 vh-100" id="editor" style="font-size:16px;">
-        {{ post.content }}
       </div>
       
       {#
