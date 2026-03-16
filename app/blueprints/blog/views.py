@@ -118,8 +118,8 @@ def edit_post(id):
   return render_template('blog/edit-post.html', form=form, post=post)
 
 
-@blog_bp.route('/post/')
-def get_post():
-  post = Post.query.filter_by(slug=request.args.get('slug')).first_or_404()
+@blog_bp.route('/post/<slug>')
+def get_post(slug):
+  post = Post.query.filter_by(slug=slug).first_or_404()
   
   return render_template('blog/post.html', post=post)

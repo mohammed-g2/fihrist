@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% from 'includes/macros.html' import pagination_widget %}
 
 {% block title %}{{ _('Homepage') }}{% endblock %}
 
@@ -12,23 +13,41 @@
     
     <div class="col-lg-8 col-12">
       <h2 class="pb-2">{{ _('Latest Articles') }}</h2>
+      
+      {% for post in posts %}
       <div class="card mb-3" style="max-width: 100%">
-      <div class="row g-0">
-        <div class="col-md-4">
-          <img src="#" class="img-fluid rounded-start" alt="...">
-        </div>
-        <div class="col-md-8">
-          <div class="card-body">
-            <h5 class="card-title">Card title</h5>
-            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-            <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+        <div class="row g-0">
+          <div class="col-md-8">
+            <div class="card-body">
+              <a
+                class="text-decoration-none d-block"
+                href="{{ url_for('blog.get_post', slug=post.slug) }}">
+                <h5 class="card-title">{{ post.title }}</h5>
+                <p class="card-text">{{ post.content[:40] }}...</p>
+              </a>
+              <p class="card-text mb-0">
+                <small class="text-body-secondary">
+                  <i class="bi bi-calendar-fill"></i>
+                  <span class="time">{{ post.created_at }}</span>
+                </small>
+              </p>
+              <p class="card-text mb-0">
+                <small class="text-body-secondary">
+                  Author: 
+                  <a href="{{ url_for('user.profile', username=post.user.username) }}">
+                    @{{ post.user.username }}
+                  </a>
+                </small>
+              </p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+      {% endfor %}
 
     </div>
     
+    {#
     <div class="col-lg-4 col-12">
       
       <div class="border rounded-2 overflow-hidden">
@@ -48,6 +67,11 @@
       </div>
       
     </div>
+    #}
+  </div>
+  
+  <div class="row mt-auto">
+    {{ pagination_widget(pagination=pagination, endpoint='main.index') }}
   </div>
 </div>
 {% endblock %}

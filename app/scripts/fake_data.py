@@ -19,7 +19,7 @@ def create_users(count: int=100) -> None:
       password='123456*',
       email=fake.name(),
       bio=fake.text(),
-      member_since=fake.past_date())
+      created_at=fake.past_date())
     
     db.session.add(user)
     
