@@ -52,7 +52,8 @@ class Post(db.Model):
       '*': ['class'], 
     }
     
-    return bleach.clean(text, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES)
+    return bleach.clean(
+      text, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES, strip=True)
   
   def plain_content(self) -> str:
     if self.content:

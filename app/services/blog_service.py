@@ -75,7 +75,8 @@ class BlogService:
   
   @classmethod
   def update_post(cls, post: Post, title: str, content: str) -> bool:
-    """"""
+    """
+    """
     if not re.fullmatch(r'^[a-zA-Z0-9 ]+$', title):
       raise InvalidPostTitle(
         'Post title can only contain letters, numbers and spaces')
@@ -98,4 +99,31 @@ class BlogService:
       raise DatabaseCommitError(e)
     
     return True
-
+    
+  @classmethod
+  def delete_post(cls, post: Post) -> bool:
+    """
+    """
+    db.session.delete(post)
+    try:
+      db.session.commit()
+    except Exception as e:
+      db.session.rollback()
+      raise DatabaseError(e)
+    
+    return True
+  
+  @classmethod
+  def change_post_status(cls, post: Post) -> bool:
+    """
+    """
+    post.status = 'published' if post.status == 'draft' else 'draft'
+    db.session.add(post)
+    try:
+      db.session.commit()
+    except Exception as e:
+      db.session.rollback()
+      raise DatabaseError(e)
+    
+    return True
+    

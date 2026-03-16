@@ -136,6 +136,6 @@ def change_password(token):
 def profile(username):
   user = User.query.filter_by(username=username).first_or_404()
   page = request.args.get('page', 1, type=int)
-  p = paginate(user.posts, Post, page)
+  p = paginate(user.posts.filter_by(status='published'), Post, page)
   return render_template(
     'user/profile.html', user=user, posts=p['items'], pagination=p['pagination'])

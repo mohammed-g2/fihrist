@@ -7,7 +7,7 @@ from app.utils import paginate
 from app.utils.decorators import permission_required
 from app.errors import InvalidPostTitle, InvalidBlogName
 from . import blog_bp
-from .forms import CreateBlogForm, CreatePostForm
+from .forms import CreateBlogForm, CreatePostForm, IDVerificationForm
 
 
 @blog_bp.route('/')
@@ -59,8 +59,15 @@ def workspace():
     return redirect(url_for('blog.blank'))
   page = request.args.get('page', 1, type=int)
   p = paginate(current_user.posts, Post, page)
+  delete_post_form = IDVerificationForm(prefix='delete-post')
+  change_post_status_form = IDVerificationForm(prefix='change-status')
+  
   return render_template(
-    'blog/workspace.html', posts=p['items'], pagination=p['pagination'])
+    'blog/workspace.html', 
+    posts=p['items'], 
+    pagination=p['pagination'],
+    delete_post_form=delete_post_form, 
+    change_post_status_form=change_post_status_form)
 
 
 @blog_bp.route('/create-post', methods=['GET', 'POST'])
@@ -78,7 +85,7 @@ def create_post():
       srv.create_post(
         user=current_user._get_current_object(),
         title=form.title.data,
-        content=form.content.data,
+        content=form.content.data or '',
         status='draft')
       flash(_('Post Saved.'), category='success')
       return redirect(url_for('blog.workspace'))
@@ -106,7 +113,10 @@ def edit_post(id):
   if form.validate_on_submit():
     srv = BlogService
     try:
-      srv.update_post(post, title=form.title.data, content=form.content.data)
+      srv.update_post(
+        post=post, 
+        title=form.title.data, 
+        content=form.content.data or '')
       flash(_('Post Updated'), category='success')
       return redirect(url_for('blog.workspace'))
     except ValueError:
@@ -128,3 +138,46 @@ def get_post(slug):
   post = Post.query.filter_by(slug=slug).first_or_404()
   
   return render_template('blog/post.html', post=post)
+
+
+@blog_bp.route('/post/delete/<int:id>', methods=['POST'])
+@login_required
+@permission_required(Permission.WRITE)
+def delete_post(id):
+  post = Post.query.get_or_404(id)
+  if post.user.id != current_user.id and\
+      not current_user.is_admin():
+    return redirect(url_for('main.index'))
+  
+  srv = BlogService
+  form = IDVerificationForm(request.form, prefix='delete-post')
+  
+  if form.validate_on_submit():
+    try:
+      srv.delete_post(post)
+      flash(_('Post Deleted'), category='success')
+    except Exception as e:
+      current_app.logger.exception(e)
+      flash(_('Something went wrong, please try again later'), category='warning')
+  return redirect(url_for('blog.workspace'))
+
+
+@blog_bp.route('/post/status/<int:id>', methods=['POST'])
+@login_required
+@permission_required(Permission.WRITE)
+def change_post_status(id):
+  post = Post.query.get_or_404(id)
+  if post.user.id != current_user.id:
+    return redirect(url_for('main.index'))
+  srv = BlogService
+  form = IDVerificationForm(request.form, prefix='change-status')
+  if form.validate_on_submit():
+    try:
+      srv.change_post_status(post)
+      flash(_('Change Applied'), category='success')
+    except Exception as e:
+      current_app.logger.exception(e)
+      flash(_('Something went wrong, please try again later'), category='warning')
+      
+  return redirect(url_for('blog.workspace'))
+

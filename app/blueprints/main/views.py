@@ -7,7 +7,7 @@ from . import main_bp
 @main_bp.route('/')
 def index():
   page = request.args.get('page', 1, type=int)
-  p = paginate(Post.query, Post, page)
+  p = paginate(Post.query.filter_by(status='published'), Post, page)
   return render_template(
     'index.html', posts=p['items'], pagination=p['pagination'])
 

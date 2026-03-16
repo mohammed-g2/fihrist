@@ -17,11 +17,12 @@
       theme: 'snow',
       placeholder: 'Compose an Epic...', 
     });
-    
-    let text = '{{ form.content.data|safe }}';
+    {#
+    let text = `{{ form.content.data }}`;
     if (text === 'None') {
       text = '';
     }
+    #}
     quill.root.innerHTML = text;
     form.addEventListener('formdata', ev => {
       ev.formData.append('content', quill.root.innerHTML);
@@ -41,6 +42,7 @@
       </div>
       
       <div class="mb-5 vh-100" id="editor" style="font-size:16px;">
+        {{ form.content.data }}
       </div>
       
       {#

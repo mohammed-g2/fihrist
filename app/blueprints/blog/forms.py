@@ -1,6 +1,7 @@
 from flask_babel import lazy_gettext as _l
 from flask_wtf import FlaskForm
-from wtforms import StringField, BooleanField, SubmitField, TextAreaField
+from wtforms import (
+  StringField, BooleanField, SubmitField, TextAreaField, HiddenField)
 from wtforms.validators import DataRequired, Length
 
 
@@ -15,3 +16,8 @@ class CreatePostForm(FlaskForm):
   title = StringField(_l('Title'), validators=[DataRequired(), Length(max=128)])
   content = TextAreaField(_l('What is on your mind...'))
   submit = SubmitField(_l('Save'))
+
+
+class IDVerificationForm(FlaskForm):
+  id = HiddenField('id', validators=[DataRequired()])
+  submit = SubmitField(_l('Verify'))

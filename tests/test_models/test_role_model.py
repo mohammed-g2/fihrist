@@ -48,8 +48,8 @@ class TestUserModel(unittest.TestCase):
     db.session.add_all([u_1, u_2])
     db.session.commit()
     
-    self.assertListEqual(r_1.users.all(), [u_1, u_2])
-    self.assertListEqual(r_2.users.all(), [])
+    self.assertCountEqual(r_1.users.all(), [u_1, u_2])
+    self.assertCountEqual(r_2.users.all(), [])
     
   
   def test_permissions_equals_0(self):

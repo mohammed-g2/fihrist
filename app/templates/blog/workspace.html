@@ -35,27 +35,68 @@
   <div class="row">
     <div class="col-md-8 col-12">
       {% for post in posts %}
-        <a class="border border-1 ps-2 mt-3 d-block text-decoration-none" href="{{ url_for('blog.edit_post', id=post.id) }}">
-          <div class="row p-2">
-            <h5 class="mb-0 col-lg-10 col-md-9">{{ post.title }}</h5>
-            <p class="mb-0 col-lg-2 col-md-3">
-              <span class="status-{{ post.status }}">
-                {% if post.status == 'published' %}
-                  <i class="bi bi-check-circle-fill"></i>
+        <div class="border border-1 rounded-2 mt-3">
+          <div class="border-bottom ps-3">
+            
+            <span class="status-{{ post.status }} me-3">
+              Status:
+              {% if post.status == 'published' %}
+                <i class="bi bi-check-circle-fill"></i>
+              {% else %}
+                <i class="bi bi-dash-circle-fill"></i>
+              {% endif %}
+              {{ post.status }}
+            </span>
+            
+            <a 
+                href="{{ url_for('blog.get_post', slug=post.slug) }}" 
+                class="text-decoration-none me-2">
+              <i class="bi bi-eye-fill fs-5"></i>
+            </a>
+            
+            <form class="d-inline me-2" method="post" action="{{ url_for('blog.change_post_status', id=post.id) }}">
+              {{ change_post_status_form.csrf_token }}
+              {{ change_post_status_form.id(value=post.id) }}
+              
+              {#
+              {{ change_post_status_form.submit(value='Change') }}
+              #}
+              <button type="submit" style="border:none;background:none;color:var(--alert);">
+                {% if post.status == 'draft' %}
+                  <i class="bi bi-send-check fs-4"></i>
                 {% else %}
-                  <i class="bi bi-dash-circle-fill"></i>
+                  <i class="bi bi-file-earmark-text fs-4"></i>
                 {% endif %}
-                {{ post.status }}
-              </span>
-            </p>
+              </button>
+            </form>
+            
+            <form class="d-inline me-2" method="post" action="{{ url_for('blog.delete_post', id=post.id) }}">
+              {% set change_btn =  '<i class="bi bi-trash fs-5"></i>'|safe %}
+              {{ delete_post_form.csrf_token }}
+              {{ delete_post_form.id(value=post.id) }}
+              {#
+              {{ delete_post_form.submit(value='Delete') }}
+              #}
+              <button type="submit" style="border:none;background:none;color:crimson;">
+                <i class="bi bi-trash fs-5"></i>
+              </button>
+
+            </form>
+            
           </div>
           
-          <p class="ps-2">
+        <a class="mt-3 d-block text-decoration-none p-2" href="{{ url_for('blog.edit_post', id=post.id) }}">
+          <div class="">
+            <h5>{{ post.title }}</h5>
+          </div>
+          <p class="">
             {% if post.content %}
               {{ post.plain_content() }}...
             {% endif %}
           </p>
         </a>
+      </div>
+        
       {% endfor %}
     </div>
   </div>

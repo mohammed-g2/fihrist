@@ -18,7 +18,7 @@
       placeholder: 'Compose an Epic...', 
     });
     
-    quill.root.innerHTML = '{{ form.content.data|safe }}';
+    quill.root.innerHTML = `{{ form.content.data|safe }}`;
     form.addEventListener('formdata', ev => {
       ev.formData.append('content', quill.root.innerHTML);
     });
