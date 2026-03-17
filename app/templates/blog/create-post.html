@@ -17,12 +17,11 @@
       theme: 'snow',
       placeholder: 'Compose an Epic...', 
     });
-    {#
-    let text = `{{ form.content.data }}`;
-    if (text === 'None') {
+    
+    if (quill.root.textContent === 'None') {
       text = '';
     }
-    #}
+    
     quill.root.innerHTML = text;
     form.addEventListener('formdata', ev => {
       ev.formData.append('content', quill.root.innerHTML);
