@@ -8,6 +8,7 @@ class Comment(db.Model):
   __tablename__ = 'comments'
   id = db.Column(db.Integer, primary_key=True)
   content_raw = db.Column(db.Text())
+  content_html = db.Column(db.Text())
   created_at = db.Column(db.DateTime(), default=datetime.utcnow)
   user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
   post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))

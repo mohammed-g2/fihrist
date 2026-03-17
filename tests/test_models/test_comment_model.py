@@ -44,6 +44,7 @@ class TestUserModel(unittest.TestCase):
     self.assertEquals(c.clean(html), result)
   
   def test_comment_cascading(self):
+    # user and post stay if comment deleted
     u = User()
     db.session.add(u)
     db.session.commit()
@@ -66,4 +67,15 @@ class TestUserModel(unittest.TestCase):
     db.session.commit()
     self.assertEquals(u.comments.all(), [])
     self.assertEquals(p.comments.all(), [])
-
+    
+    # comment stays if post deleted
+    c = Comment()
+    c.user = u
+    c.post = p
+    db.session.add(c)
+    db.session.commit()
+    
+    db.session.delete(p)
+    db.session.commit()
+    
+    self.assertEquals(Comment.query.all(), [c])

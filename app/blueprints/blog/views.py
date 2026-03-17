@@ -1,13 +1,14 @@
 from flask import render_template, redirect, url_for, current_app, flash, request
 from flask_login import login_required, current_user
 from flask_babel import _
-from app.models import Permission, Post
+from app.models import Permission, Post, Comment
 from app.services import BlogService
 from app.utils import paginate
 from app.utils.decorators import permission_required
 from app.errors import InvalidPostTitle, InvalidBlogName
 from . import blog_bp
-from .forms import CreateBlogForm, CreatePostForm, IDVerificationForm
+from .forms import (
+  CreateBlogForm, CreatePostForm, IDVerificationForm, CreateCommentForm)
 
 
 @blog_bp.route('/')
@@ -136,8 +137,13 @@ def edit_post(id):
 @blog_bp.route('/post/<slug>')
 def get_post(slug):
   post = Post.query.filter_by(slug=slug).first_or_404()
+  create_comment_form = CreateCommentForm(prefix='create-comment')
+  delete_comment_form = IDVerificationForm(prefix='delete-comment')
   
-  return render_template('blog/post.html', post=post)
+  comments = post.comments.all()
+  return render_template(
+    'blog/post.html', post=post, comments=comments,
+    create_comment_form=create_comment_form, delete_comment_form=delete_comment_form)
 
 
 @blog_bp.route('/post/delete/<int:id>', methods=['POST'])
@@ -169,8 +175,10 @@ def change_post_status(id):
   post = Post.query.get_or_404(id)
   if post.user.id != current_user.id:
     return redirect(url_for('main.index'))
+  
   srv = BlogService
   form = IDVerificationForm(request.form, prefix='change-status')
+  
   if form.validate_on_submit():
     try:
       srv.change_post_status(post)
@@ -181,3 +189,46 @@ def change_post_status(id):
       
   return redirect(url_for('blog.workspace'))
 
+
+@blog_bp.route('/create-comment', methods=['POST'])
+@login_required
+@permission_required(Permission.COMMENT)
+def create_comment():
+  form = CreateCommentForm(request.form, prefix='create-comment')
+  srv = BlogService
+  current_app.logger.exception(request.form)
+  if form.validate_on_submit():
+    post = Post.query.get_or_404(form.post_id.data)
+    try:
+      srv.create_comment(
+        user=current_user._get_current_object(),
+        post=post,
+        content=form.content.data)
+      return redirect(url_for('blog.get_post', slug=post.slug))
+    except ValueError:
+      flash(_('Comment cannot be empty'), category='warning')
+    except Exception as e:
+      current_app.logger.exception(e)
+      flash(_('Something went wrong, please try again later'), category='warning')
+  return redirect(url_for('main.index'))
+  
+
+@blog_bp.route('/delete-comment/<int:id>', methods=['POST'])
+@login_required
+@permission_required(Permission.COMMENT)
+def delete_comment(id):
+  form = IDVerificationForm(request.form, prefix='delete-comment')
+  srv = BlogService
+  
+  if form.validate_on_submit():
+    comment = Comment.query.get_or_404(id)
+    if current_user.id != comment.user.id\
+        and not current_user.is_admin():
+      return redirect(url_for('main.index'))
+    try:
+      srv.delete_comment(comment=comment)
+      return redirect(url_for('blog.get_post', slug=form.id.data))
+    except Exception as e:
+      current_app.logger.exception(e)
+      flash(_('Something went wrong, please try again later'), category='warning')
+  return redirect(url_for('main.index'))

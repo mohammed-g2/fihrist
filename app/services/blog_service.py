@@ -1,7 +1,7 @@
 import re
 from datetime import datetime
 from app.ext import db
-from app.models import User, Blog, Post
+from app.models import User, Blog, Post, Comment
 from app.errors import DatabaseCommitError, InvalidBlogName, InvalidPostTitle
 
  
@@ -76,6 +76,16 @@ class BlogService:
   @classmethod
   def update_post(cls, post: Post, title: str, content: str) -> bool:
     """
+    Update given post
+    
+    :param post: `Post` model instance
+    :param title: post title
+    :param content: post content
+    :returns: True if update successful
+    
+    :raises InvalidPostTitle: if title contains illegal characters
+    :raises ValueError: if title already exists in database
+    :raises DatabaseCommitError: if failed to commit to database
     """
     if not re.fullmatch(r'^[a-zA-Z0-9 ]+$', title):
       raise InvalidPostTitle(
@@ -103,19 +113,29 @@ class BlogService:
   @classmethod
   def delete_post(cls, post: Post) -> bool:
     """
+    Delete give post
+    
+    :param post: `Post` model instance
+    :returns: True if successful
+    :raises DatabaseCommitError: if failed to commit to database
     """
     db.session.delete(post)
     try:
       db.session.commit()
     except Exception as e:
       db.session.rollback()
-      raise DatabaseError(e)
+      raise DatabaseCommitError(e)
     
     return True
   
   @classmethod
   def change_post_status(cls, post: Post) -> bool:
     """
+    Change given post status between `draft` and `published`
+    
+    :param post: `Post` model instance
+    :returns: True if successful
+    :raises DatabaseCommitError: if failed to commit to database
     """
     post.status = 'published' if post.status == 'draft' else 'draft'
     db.session.add(post)
@@ -123,7 +143,46 @@ class BlogService:
       db.session.commit()
     except Exception as e:
       db.session.rollback()
-      raise DatabaseError(e)
+      raise DatabaseCommitError(e)
     
     return True
+  
+  @classmethod
+  def create_comment(cls, user: User, post: Post, content: str) -> bool:
+    """
+    Create comment for given user and post
     
+    :param user: `User` model instance
+    :param post: `Post` model instance
+    :param content: comment's content
+    :returns: True if successful
+    :raises ValueError: if comment is empty
+    :raises DatabaseCommitError: if failed to commit to database
+    """
+    if content == '':
+      raise ValueError('Empty comment')
+    comment = Comment(content=content, user=user, post=post)
+    db.session.add(comment)
+    try:
+      db.session.commit()
+    except Exception as e:
+      db.session.rollback()
+      raise DatabaseCommitError()
+    return True
+
+  @classmethod
+  def delete_comment(cls, comment: Comment) -> bool:
+    """
+    Delete given comment
+    
+    :param comment: `Comment` model instance
+    :returns: True if successful
+    :raises DatabaseCommitError: if failed to commit to database
+    """
+    db.session.delete(comment)
+    try:
+      db.session.commit()
+    except Exception as e:
+      db.session.rollback()
+      raise DatabaseCommitError()
+    return True

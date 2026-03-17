@@ -21,3 +21,10 @@ class CreatePostForm(FlaskForm):
 class IDVerificationForm(FlaskForm):
   id = HiddenField('id', validators=[DataRequired()])
   submit = SubmitField(_l('Verify'))
+
+
+class CreateCommentForm(FlaskForm):
+  post_id = HiddenField('post_id', validators=[DataRequired()])
+  content = TextAreaField(
+    _l('Content'), validators=[DataRequired(), Length(min=1, max=128)])
+  submit = SubmitField(_l('Comment'))

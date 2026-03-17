@@ -21,5 +21,66 @@
       <div>{{ post.content|safe }}</div>
     </div>
   </div>
+  
+  <div class="row">
+    <hr>
+    <div class="col-lg-8 col-md-8 col-12">
+      <h5>{{ _('Comments') }} ({{ comments|length }})</h5>
+    
+      {% if comments %}
+        {% for comment in comments %}
+          <div class="d-flex w-100 my-3">
+            <div class="mx-2">
+              <img class="rounded-circle" src="{{ comment.user.gavatar(32) }}">
+            </div>
+            
+            <div class="flex-grow-1 border border-1 rounded-2 p-2" style="background-color:#fff;">
+              <h6>@{{ comment.user.username }}</h6>
+              <small class="text-secondary">
+                <i class="bi bi-calendar-date"></i>
+                <span class="time">{{ comment.created_at }}</span>
+              </small>
+              <p class="mt-2">{{ comment.content }}</p>
+              {% if 
+                  current_user.is_authenticated and 
+                  current_user.id == comment.user.id %}
+                <form method="post" action="{{ url_for('blog.delete_comment', id=comment.id) }}">
+                  {{ delete_comment_form.csrf_token }}
+                  {{ delete_comment_form.id(value=post.slug) }}
+                  
+                  <button type="submit" style="border:none;background:none;color:crimson;">
+                    <i class="bi bi-trash fs-5"></i>
+                  </button>
+                </form>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>{{ _('No Comments') }}</p>
+      {% endif %}
+    </div>
+    
+    <h5>{{ _('Leave a Comment') }}</h5>
+    <div class="col-lg-6">
+      <div class="">
+        {% if current_user.is_authenticated and current_user.can(Permission.COMMENT) %}
+        <form method="post" action="{{ url_for('blog.create_comment') }}">
+          {{ create_comment_form.csrf_token }}
+          {{ create_comment_form.post_id(value=post.id) }}
+          <div class="mb-3">
+            {{ create_comment_form.content(class='form-control') }}
+          </div>
+          <div class="ms-auto">{{ create_comment_form.submit(class='btn btn-ink') }}</div>
+        </form>
+        {% else %}
+          <p>{{ _('Please login to write a comment') }}</p>
+        {% endif %}
+      </div>
+      
+      
+    </div>
+  </div>
+  
 </div>
 {% endblock %}

@@ -71,7 +71,6 @@
             </form>
             
             <form class="d-inline me-2" method="post" action="{{ url_for('blog.delete_post', id=post.id) }}">
-              {% set change_btn =  '<i class="bi bi-trash fs-5"></i>'|safe %}
               {{ delete_post_form.csrf_token }}
               {{ delete_post_form.id(value=post.id) }}
               {#
