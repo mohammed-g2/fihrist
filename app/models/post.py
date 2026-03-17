@@ -18,6 +18,7 @@ class Post(db.Model):
   user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
   blog = db.relationship('Blog', back_populates='posts')
   user = db.relationship('User', back_populates='posts')
+  comments = db.relationship('Comment', back_populates='post', lazy='dynamic')
   
   def __repr__(self):
     return f'<Post { self.title }>'
@@ -27,18 +28,24 @@ class Post(db.Model):
     return self.content_html
   
   @content.setter
-  def content(self, value):
+  def content(self, value: str):
     self.content_raw = value
     self.content_html = self.clean(value)
   
   def create_slug(self) -> None:
+    """
+    Create slug for the post using the title
+    """
     # remove all special characters, keep letters, numbers and spaces
     slug = re.sub(r'[^a-zA-Z0-9 ]', '', self.title.strip())
     # replace spaces with hyphens
     slug = slug.replace(' ', '-').lower()
     self.slug = slug
   
-  def clean(self, text) -> None:
+  def clean(self, text: str) -> None:
+    """
+    Remove unwanted tags from the content
+    """
     ALLOWED_TAGS = [
       'a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em', 'i', 
       'li', 'ol', 'ul', 'strong', 'p', 'br', 'span', 'h1', 'h2', 'h3', 
@@ -56,6 +63,9 @@ class Post(db.Model):
       text, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES, strip=True)
   
   def plain_content(self) -> str:
+    """
+    Provide the content without tags
+    """
     if self.content:
       return bleach.clean(self.content[:80], tags=[], strip=True)
     return ''
