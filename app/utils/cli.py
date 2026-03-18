@@ -45,21 +45,36 @@ def init_cli(app: Flask) -> None:
     from app.models import Role
     from app.models.permission import roles, default_role
     from app.scripts.fake_data import (
-      create_users, create_blogs, create_posts)
+      create_users, create_blogs, create_posts, create_categories,
+      create_comments)
+    
     count = 100
+    
     if app.config['ENV'] != 'development':
       click.echo('> Not in development environment.')
+      return
+    
     db.drop_all()
     db.create_all()
     click.echo('> Dropped and recreated database.')
+    
     Role.set_roles(roles=roles, default=default_role)
     click.echo('> Created user roles.')
+    
     create_users(count)
     click.echo(f'> Created users, count: { count }')
+    
     create_blogs()
     click.echo(f'> Created blogs, count: { count }')
+    
+    create_categories(10)
+    click.echo('Created categories, count: 10')
+    
     create_posts(count)
     click.echo(f'> Created posts, count: { count }')
+    
+    create_comments(count)
+    click.echo(f'> Create comments, count { count }')
   
   @app.cli.command()
   def test():
@@ -106,7 +121,8 @@ def create_shell_context(app: Flask) -> None:
   @app.shell_context_processor
   def shell_context():
     from app.ext import db
-    from app.models import User, Role, Permission, Blog, Post, Comment
+    from app.models import (
+      User, Role, Permission, Blog, Post, Comment, Category)
     return dict(
       db=db, User=User, Role=Role, Permission=Permission, Blog=Blog,
-      Post=Post, Comment=Comment)
+      Post=Post, Comment=Comment, Category=Category)

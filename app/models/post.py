@@ -16,6 +16,8 @@ class Post(db.Model):
   updated_at = db.Column(db.DateTime())
   blog_id = db.Column(db.Integer, db.ForeignKey('blogs.id'))
   user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+  category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
+  category = db.relationship('Category', back_populates='posts')
   blog = db.relationship('Blog', back_populates='posts')
   user = db.relationship('User', back_populates='posts')
   comments = db.relationship('Comment', back_populates='post', lazy='dynamic')

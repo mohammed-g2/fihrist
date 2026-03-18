@@ -10,7 +10,7 @@ Stack:
 
 
 # Request Flow
-
+`
 HTTP Request 
 a browser or another client sends an HTTP request to the application
    |
@@ -24,10 +24,12 @@ submitted forms or GET/POST requests
    |
 Service Layer
 the application logic, all operations that require the collaboration
-of multiple models or logic heavy with external dependencies goes here
+of multiple models or logic heavy or operations that require
+external dependencies goes here
    |
 Database ORM
 responsible for querying database, database models should be thin, 
 and should only contain operations that are tightly related to the model
    |
 Database
+`

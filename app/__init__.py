@@ -31,7 +31,8 @@ def create_app(config_name: str) -> Flask:
     migrate.init_app(app, db)
   
   with app.app_context():
-    from app.models import User, Role, Permission, Blog, Post, Comment
+    from app.models import (
+      User, Role, Permission, Blog, Post, Comment, Category)
   
   @app.context_processor
   def create_template_context():
@@ -41,13 +42,12 @@ def create_app(config_name: str) -> Flask:
   
   
   from app.blueprints import (
-    admin_bp, auth_bp, blog_bp, main_bp, post_bp, user_bp)
+    admin_bp, auth_bp, blog_bp, main_bp, user_bp)
   
   app.register_blueprint(main_bp)
   app.register_blueprint(admin_bp, url_prefix='/admin')
   app.register_blueprint(auth_bp, url_prefix='/auth')
   app.register_blueprint(blog_bp, url_prefix='/blog')
-  app.register_blueprint(post_bp, url_prefix='/post')
   app.register_blueprint(user_bp, url_prefix='/user')
 
   return app
