@@ -36,7 +36,7 @@ class BlogService:
     return True
   
   @classmethod
-  def create_post(cls, user: User, title: str, content: str, status: str) -> bool:
+  def create_post(cls, user: User, title: str, content: str, status: str, category: Category) -> bool:
     """
     Create post
     
@@ -60,7 +60,8 @@ class BlogService:
       user=user, 
       title=title.strip(), 
       content=content.strip(), 
-      status=status)
+      status=status,
+      category=category)
     post.blog = user.blog
     post.create_slug()
     
@@ -74,7 +75,7 @@ class BlogService:
     return True
   
   @classmethod
-  def update_post(cls, post: Post, title: str, content: str) -> bool:
+  def update_post(cls, post: Post, title: str, content: str, category: Category) -> bool:
     """
     Update given post
     
@@ -99,6 +100,7 @@ class BlogService:
     post.title = title.strip()
     post.content = content.strip()
     post.updated_at = datetime.utcnow()
+    post.category = category
     post.create_slug()
     
     db.session.add(post)
@@ -197,6 +199,7 @@ class BlogService:
     :raises DatabaseCommitError: if failed to commit to database
     """
     category = Category(name=name)
+    category.create_slug()
     db.session.add(category)
     try:
       db.session.commit()

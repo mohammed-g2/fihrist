@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for, current_app, flash, request
 from flask_login import login_required, current_user
 from flask_babel import _
-from app.models import Permission, Post, Comment
+from app.models import Permission, Post, Comment, Category
 from app.services import BlogService
 from app.utils import paginate
 from app.utils.decorators import permission_required
@@ -82,11 +82,13 @@ def create_post():
   
   if form.validate_on_submit():
     srv = BlogService
+    category = Category.query.get_or_404(form.category.data)
     try:
       srv.create_post(
         user=current_user._get_current_object(),
         title=form.title.data,
         content=form.content.data or '',
+        category=category,
         status='draft')
       flash(_('Post Saved.'), category='success')
       return redirect(url_for('blog.workspace'))
@@ -109,14 +111,16 @@ def edit_post(id):
   if post.user.id != current_user.id:
     return redirect(url_for('blog.index'))
 
-  form = CreatePostForm()
+  form = CreatePostForm(category=post.category.id)
   
   if form.validate_on_submit():
     srv = BlogService
+    category = Category.query.get_or_404(form.category.data)
     try:
       srv.update_post(
         post=post, 
         title=form.title.data, 
+        category=category,
         content=form.content.data or '')
       flash(_('Post Updated'), category='success')
       return redirect(url_for('blog.workspace'))

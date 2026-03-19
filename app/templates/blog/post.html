@@ -12,11 +12,27 @@
     <div class="col-12">
       <h3>{{ post.title }}</h3>
       <div>
-        <p>Created at: <span class="time">{{ post.created_at }}</span></p>
+        
+        <p class="m-0 fw-bold">
+          {{ _('Category') }}: 
+          <a href="{{ url_for('main.get_by_category', slug=post.category.slug) }}">
+            {{ post.category.name }}
+          </a>
+        </p>
+        
+        <p class="m-0">
+          Author: 
+          <a href="{{ url_for('user.profile', username=post.user.username) }}">
+            @{{ post.user.username }}
+          </a>
+        </p>
+        
+        <p class="m-0">Created at: <span class="time">{{ post.created_at }}</span></p>
         {% if post.updated_at %}
-          <p>Updated at: <span class="time">{{ post.updated_at }}</span></p>
+          <p class="m-0">Updated at: <span class="time">{{ post.updated_at }}</span></p>
         {% endif %}
-        <p>Author: <a href="{{ url_for('user.profile', username=post.user.username) }}">@{{ post.user.username }}</a></p>
+        
+        <hr>
       </div>
       <div>{{ post.content|safe }}</div>
     </div>

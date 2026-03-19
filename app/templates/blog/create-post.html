@@ -40,6 +40,10 @@
         {{ form.title(class='form-control', id='title', placeholder=form.title.label.text) }}
       </div>
       
+      <div>
+        {{ form.category(class='form-select') }}
+      </div>
+      
       <div class="mb-5 vh-100" id="editor" style="font-size:16px;">
         {{ form.content.data }}
       </div>

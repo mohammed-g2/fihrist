@@ -1,8 +1,10 @@
 from flask_babel import lazy_gettext as _l
 from flask_wtf import FlaskForm
 from wtforms import (
-  StringField, BooleanField, SubmitField, TextAreaField, HiddenField)
+  StringField, BooleanField, SubmitField, TextAreaField, HiddenField,
+  SelectField)
 from wtforms.validators import DataRequired, Length
+from app.models import Category
 
 
 class CreateBlogForm(FlaskForm):
@@ -15,7 +17,12 @@ class CreateBlogForm(FlaskForm):
 class CreatePostForm(FlaskForm):
   title = StringField(_l('Title'), validators=[DataRequired(), Length(max=128)])
   content = TextAreaField(_l('What is on your mind...'))
+  category = SelectField(_l('Category'), coerce=int, validators=[DataRequired()])
   submit = SubmitField(_l('Save'))
+  
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    self.category.choices = [(cat.id, cat.name) for cat in Category.query.all()]
 
 
 class IDVerificationForm(FlaskForm):

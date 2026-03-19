@@ -1,7 +1,13 @@
 {% extends 'base.html' %}
 {% from 'includes/macros.html' import pagination_widget %}
 
-{% block title %}{{ _('Homepage') }}{% endblock %}
+{% block title %}
+  {% if endpoint == 'main.index' %}
+    {{ _('Homepage') }}
+  {% elif endpoint == 'main.get_by_category' %}
+    {{ current_category.name }}
+  {% endif %}
+{% endblock %}
 
 {% block head %}
   {{ super() }}
@@ -12,7 +18,12 @@
   <div class="row">
     
     <div class="col-lg-8 col-12">
-      <h2 class="pb-2">{{ _('Latest Articles') }}</h2>
+      {% if endpoint == 'main.index' %}
+        <h2 class="pb-2">{{ _('Latest Articles') }}</h2>
+      {% elif endpoint == 'main.get_by_category' %}
+        <h2 class="pb-2">{{ current_category.name }}</h2>
+      {% endif %}
+      
       
       {% for post in posts %}
       <div class="card mb-3" style="max-width: 100%">
@@ -47,31 +58,31 @@
 
     </div>
     
-    {#
+    
     <div class="col-lg-4 col-12">
       
-      <div class="border rounded-2 overflow-hidden">
-        <div class="card border-0 rounded-0">
-          <h4 class="p-2 ps-3 pt-3">{{ _('Featured') }}</h4>
-          <hr class="m-auto" style="margin:0; width:75%;">
-          
-          <div class="card-body">
-            <h5 class="card-title">Card title</h5>
-            <h6 class="card-subtitle mb-2 text-body-secondary">Card subtitle</h6>
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
-            <a href="#" class="card-link">Card link</a>
-            <a href="#" class="card-link">Another link</a>
-          </div>
-        </div>
+      <div class="border rounded-2 overflow-hidden p-3">
+        <h5>{{ _('Categories') }}</h5>
+        {% for category in categories %}
+          <p>
+            <a href="{{ url_for('main.get_by_category', slug=category.slug) }}">
+              {{ category.name }}
+            </a>
+          </p>
+        {% endfor %}
         <hr class="m-auto" style="margin:0; width:75%;">
       </div>
       
     </div>
-    #}
+    
   </div>
   
   <div class="row mt-auto">
-    {{ pagination_widget(pagination=pagination, endpoint='main.index') }}
+    {% if endpoint == 'main.index' %}
+      {{ pagination_widget(pagination=pagination, endpoint=endpoint) }}
+    {% elif endpoint == 'main.get_by_category' %}
+      {{ pagination_widget(pagination=pagination, endpoint=endpoint, slug=current_category.slug) }}
+    {% endif %}
   </div>
 </div>
 {% endblock %}

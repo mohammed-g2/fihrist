@@ -79,7 +79,6 @@
               <button type="submit" style="border:none;background:none;color:crimson;">
                 <i class="bi bi-trash fs-5"></i>
               </button>
-
             </form>
             
           </div>
@@ -94,6 +93,8 @@
             {% endif %}
           </p>
         </a>
+        
+        <p class="fw-bold px-2 border-top pt-2">Category: {{ post.category.name }}</p>
       </div>
         
       {% endfor %}
