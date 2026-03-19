@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}{{ _('Moderate Comments') }}{% endblock %}
+
+
+{% block content %}
+<div class="container">
+  <div class="row mt-4">
+    <div class="col-12">
+      <h4 class="mb-3">{{ _('Tasks') }}</h4>
+      <p>
+        <a href="{{ url_for('admin.moderate_comments') }}">
+          {{ _('Moderate Comments') }}
+        </a>
+      </p>
+      <p>
+        <a href="{{ url_for('admin.moderate_posts') }}">
+          {{ _('Moderate Posts') }}
+        </a>
+      </p>
+    </div>
+  </div>
+  <div class="row mt-4">
+    <div class="col-12">
+      <h4 class="mb-3">{{ _('Statistics') }}</h4>
+      <p class="m-0">{{ _('Total Users') }}: {{ user_count }}</p>
+      <p class="m-0">{{ _('Total Posts') }}: {{ post_count }}</p>
+      <p class="m-0">{{ _('Total Comments') }}: {{ comment_count }}</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

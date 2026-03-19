@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% from 'includes/macros.html' import pagination_widget %}
+{% block title %}{{ _('Moderate Posts') }}{% endblock %}
+
+
+{% block content %}
+<div class="container d-flex flex-column h-100 pt-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex justify-content-between">
+        <h3>{{ _('All Posts') }} ({{ pagination.total }})</h3>
+      </div>
+    </div>
+  </div>
+  
+  <div class="row mb-3">
+    <div class="col-md-8 col-12">
+      {% for post in posts %}
+        <div class="border border-1 rounded-2 mt-3">
+          <div class="border-bottom ps-3 pb-2">
+            
+            <form class="d-inline me-2" method="post">
+              {{ form.csrf_token }}
+              {{ form.id(value=post.id) }}
+              {#
+              {{ form.submit(value='Delete') }}
+              #}
+              <button type="submit" style="border:none;background:none;color:crimson;">
+                <i class="bi bi-trash fs-5"></i>
+              </button>
+            </form>
+
+            <a class="" href="{{ url_for('blog.get_post', slug=post.slug) }}">
+              Open Post
+            </a>
+            
+          </div>
+          
+        <div class="p-2">
+          <p>by user: @{{ post.user.username }}</p>
+          <p class="fw-bold mb-1">Title: {{ post.title }}</p>
+          <p class="m-0">
+            {% if post.content %}
+              {{ post.content[:80] }}...
+            {% endif %}
+          </p>
+        </div>
+          
+      </div>
+        
+      {% endfor %}
+    </div>
+  </div>
+  
+  <div class="row mt-auto">
+    {{ pagination_widget(pagination=pagination, endpoint='admin.moderate_posts') }}
+  </div>
+  
+</div>
+{% endblock %}
