@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% from 'includes/macros.html' import form_field %}
+{% block title %}{{ _('Manage Categories') }}{% endblock %}
+
+
+{% block content %}
+<div class="container d-flex flex-column h-100 pt-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="">
+        <h3>{{ _('Manage Categories') }}</h3>
+        <h5>{{ _('Total Count') }}: {{ categories|length }}</h5>
+      </div>
+    </div>
+  </div>
+  
+  <div class="row">
+    <div class="col-md-8 col-12">
+      <form class="row row-cols-lg-auto g-3 align-items-center my-3" method="post">
+        {{ create_category_form.csrf_token }}
+        <div class="col-12">
+          {{ create_category_form.name.label(text='New Category') }}
+        </div>
+        <div class="col-12">
+          {{ create_category_form.name(class='form-control') }}
+        </div>
+        <div class="col-12">
+          {{ create_category_form.submit(value='Create', class='btn btn-alert') }}
+        </div>
+        
+      </form>
+    </div>
+  </div>
+  
+  <div class="row mb-3">
+    <div class="col-md-8 col-12">
+      {% for category in categories %}
+        <div class="border border-1 rounded-2 mt-3">
+          <div class="border-bottom p-3">
+
+            <form class="d-inline me-2" method="post">
+              {{ edit_category_form.csrf_token }}
+              {{ edit_category_form.id(value=category.id) }}
+              {{ edit_category_form.name(value=category.name, class='form-control') }}
+              {{ edit_category_form.submit(value='Edit', class='btn btn-alert mt-3') }}
+            </form>
+            
+            <form class="d-inline me-2" method="post">
+              {{ delete_category_form.csrf_token }}
+              {{ delete_category_form.id(value=category.id) }}
+              {{ delete_category_form.submit(value='Delete', class='btn btn-alert mt-3') }}
+            </form>
+            
+          </div>
+          
+        <div class="p-2">
+          posts {{ category.posts.count() }}
+        </div>
+          
+      </div>
+        
+      {% endfor %}
+    </div>
+  </div>
+  
+</div>
+{% endblock %}

@@ -89,6 +89,15 @@
               </a>
             </li>
             {% endif %}
+            
+            {% if current_user.is_admin() %}
+            <li>
+              <a class="dropdown-item" href="{{ url_for('admin.admin_dashboard') }}"> 
+                <i class="bi bi-server icon"></i>
+                {{ _('Administrate') }}
+              </a>
+            </li>
+            {% endif %}
           </ul>
         </li>
       </ul>

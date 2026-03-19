@@ -1,7 +1,7 @@
 import re
 from datetime import datetime
 from app.ext import db
-from app.models import User, Blog, Post, Comment
+from app.models import User, Blog, Post, Comment, Category
 from app.errors import DatabaseCommitError, InvalidBlogName, InvalidPostTitle
 
  
@@ -185,4 +185,61 @@ class BlogService:
     except Exception as e:
       db.session.rollback()
       raise DatabaseCommitError()
+    return True
+  
+  @classmethod
+  def create_category(cls, name: str) -> bool:
+    """
+    Create category
+    
+    :param name: category name
+    :returns: True if successful
+    :raises DatabaseCommitError: if failed to commit to database
+    """
+    category = Category(name=name)
+    db.session.add(category)
+    try:
+      db.session.commit()
+    except Exception as e:
+      db.session.rollback()
+      raise DatabaseCommitError(e)
+    
+    return True
+  
+  @classmethod
+  def delete_cateory(cls, category: Category) -> bool:
+    """
+    Delete category
+    
+    :param category: `Category` model instance
+    :returns: True if successful
+    :raises DatabaseCommitError: if failed to commit to database
+    """
+    db.session.delete(category)
+    try:
+      db.session.commit()
+    except Exception as e:
+      db.session.rollback()
+      raise DatabaseCommitError(e)
+    
+    return True
+  
+  @classmethod
+  def edit_category(cls, category: Category, name: str) -> bool:
+    """
+    Edit category
+    
+    :param category: `Category` model instance
+    :param name: category's new name
+    :returns: True if successful
+    :raises DatabaseCommitError: if failed to commit to database
+    """
+    category.name = name
+    db.session.add(category)
+    try:
+      db.session.commit()
+    except Exception as e:
+      db.session.rollback()
+      raise DatabaseCommitError(e)
+    
     return True

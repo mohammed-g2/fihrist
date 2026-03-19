@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}{{ _('Administration') }}{% endblock %}
+
+
+{% block content %}
+<div class="container">
+  <div class="row mt-4">
+    <div class="col-12">
+      <h4 class="mb-3">{{ _('Tasks') }}</h4>
+      <p>
+        <a href="{{ url_for('admin.manage_categories') }}">
+          {{ _('Manage Categories') }}
+        </a>
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}
