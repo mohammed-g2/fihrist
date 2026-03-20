@@ -1,18 +1,17 @@
 Relationships
-`
-User 1---* Post
-User *---1 Role
-User 1---1 Blog
-Blog 1---* Posts
-Blog *---* BlogMember
-User 1---1 BlogMember
-Post *---* Tag
-Post *---1 Category
-Post 1---* Comment
-Post 1---* Revisions
-Post 1---1 PostImage
-User 1---* PostImage
-`
+```
+User 1---* Post\
+User *---1 Role\
+User 1---1 Blog\
+Blog 1---* Posts\
+Blog *---* BlogMember\
+User 1---1 BlogMember\
+Post *---1 Category\
+Post 1---* Comment\
+Post 1---* Revisions\
+Post 1---1 PostImage\
+User 1---* PostImage\
+```
 
 User (author/owner)
 - id
@@ -74,11 +73,6 @@ Revisions
 - created_at
 
 Category
-- id
-- name
-- slug
-
-Tag
 - id
 - name
 - slug

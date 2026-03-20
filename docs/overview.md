@@ -3,9 +3,7 @@
 ### Public
 - home
 - post
-- category list
-- tag list
-- post list by date/category/tag
+- post list by date/category
 
 ### Non logged in Users
 - register
@@ -18,6 +16,7 @@
 - new blog
 
 ### Blog Owner
+- workspace
 - new post
 - edit post
 - blog settings
@@ -25,15 +24,13 @@
 ### Moderator
 - moderator dashboard
 - posts list
-- users list
 - comments list
 
 ### Admin
 - admin dashboard
-- posts list
+- categories list
 - users list
-- comments list
-- website settings
+- website settings (* work in progress)
 
 ---
 
@@ -43,14 +40,13 @@
 - register new account
 - login
 - logout
-- role system (admin - moderator - author)
+- role system (admin - moderator - user - banned) 
 
 ### Blog Management
-- user can create multiple blogs
 - owner can  edit blog settings
-- owner can add writers to the blog
-- writer or owner can add posts to blog
+- owner can add posts to blog
 - only blog owner can edit or delete published posts
+- switch posts between published (making it public) and draft (private)
 
 ### Post Management
 - create post
@@ -58,14 +54,13 @@
 - edit post
 - delete post
 - publish / draft
-- snapshots of posts are kept for rollback
+- snapshots of posts are kept for rollback (* work in progress)
 
 ### Content Organization
-- categories
-- tags
+- create/edit/delete categories
 
 ### Comments
-- guests (unregistered users) can add comments
+- guests (unregistered users) can add comments (* not implemented)
 - add comment
 - moderate comment
 - delete comment
@@ -75,7 +70,7 @@
 - list comments
 - delete posts
 - delete comments
-- ban users (for a time)
+- ban users (for a time) (* work in progress)
  
 ### Admin Dashboard
 - list posts
@@ -83,29 +78,27 @@
 - list comments
 - delete users
 - delete comments
-- ban users
+- ban users (* work in progress)
 - add moderators
 
 ### Public Pages
 - home page (recent posts)
 - single post page
-- category page
-- tag page
-- list posts by date page
+- list posts by category page
+- list posts by date page (* work in progress)
 - about us
 
 ### Advanced Features
-- search
+- search (* work in progress)
 - pagination
 - markdown support
 - image upload
 - scheduled publishing
 - revision history
-- API endpoints
 
 ### Other
-- Rate Limiting
-- Caching Layer
+- Rate Limiting (* not implemented)
+- Caching Layer (* not implemented)
 
 ### Future
 - owners can add css theme to the blog
