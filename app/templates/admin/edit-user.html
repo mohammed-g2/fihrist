@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% from 'includes/macros.html' import form_checkbox %}
+
+{% block title %}{{ _('User') }}: {{ user.username }}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row mt-4">
+    <div class="col-12">
+      <h4 class="mb-2">{{ _('Edit User') }}</h4>
+      <hr>
+    </div>
+  </div>
+  <div class="row mt-2">
+    <div class="col-lg-6 col-md-8 col-12">
+      
+      <div class="mb-3">
+        <h5>User Data</h5>
+        <div class="mb-2"><a href="{{ url_for('user.profile', username=user.username) }}">> Go To Profile</a></div>
+        <div><b>Email:</b> {{ user.email }}</div>
+        <div><b>Username:</b> {{ user.username }}</div>
+        <div><b>Member Since:</b> <span class="time">{{ user.created_at }}</span></div>
+        <div><b>Last Seen:</b> <span class="time">{{ user.last_seen }}</span></div>
+        <div><b>Blog:</b> {{ user.blog.name or 'None' }}</div>
+        <div><b>Posts:</b> {{ user.posts.count() }}</div>
+        <div><b>Comments:</b> {{ user.comments.count() }}</div>
+        <div><b>Bio:</b> {{ user.bio }}</div>
+      </div>
+      <hr>
+      <form method="post">
+        <h5>Edit User Account</h5>
+        {{ edit_user_form.hidden_tag() }}
+        <div>
+          {{form_checkbox(
+              edit_user_form.confirmed, 
+              label=edit_user_form.confirmed.label)}}
+        </div>
+        <div>
+          {{ edit_user_form.role(class='form-select') }}
+        </div>
+        
+        {{ edit_user_form.submit(class='btn btn-slate mt-3') }}
+      </form>
+      
+      <hr>
+      <form method="post" class="mt-5">
+        {{ delete_user_form.csrf_token }}
+        {{ delete_user_form.id(value=user.id) }}
+        {{ delete_user_form.submit(class='btn btn-alert', value='Delete User') }}
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

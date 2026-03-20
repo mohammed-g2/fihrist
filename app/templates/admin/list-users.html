@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% from 'includes/macros.html' import pagination_widget %}
+{% block title %}{{ _('Manage Users') }}{% endblock %}
+
+
+{% block content %}
+<div class="container d-flex flex-column h-100 pt-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex justify-content-between">
+        <h3>{{ _('All Users') }} ({{ pagination.total }})</h3>
+      </div>
+    </div>
+  </div>
+  
+  <div class="row mb-3">
+    <div class="col-12">
+      
+      <table class="table table-borderless" style="background-color:none !important;">
+        <thead>
+          <tr>
+            <th scope="col">User</th>
+            <th scope="col">Role</th>
+            <th scope="col">Member Since</th>
+            <th scope="col">Last Seen</th>
+            <th scope="col">Edit</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in users %}
+            <tr>
+              <th scope="row">
+                <div class="d-flex">
+                  <div class="mt-1 mx-3">
+                    <img src="{{ user.gavatar(36) }}">
+                  </div>
+                  <div class="">
+                    <a href="{{ url_for('user.profile', username=user.username) }}">
+                      @{{ user.username }}
+                    </a>
+                    <br>
+                    {{ user.email }}
+                  </div>
+                </div>
+              </th>
+              <td>{{ user.role.name }}</td>
+              <td><span class="time">{{ user.created_at }}</span></td>
+              <td><span class="time">{{ user.last_seen }}</span></td>
+              <td>
+                <a href="{{ url_for('admin.edit_user', id=user.id) }}">
+                  <i class="bi bi-pencil-square"></i>
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      
+    </div>
+  </div>
+  
+  <div class="row mt-auto">
+    {{ pagination_widget(pagination=pagination, endpoint='admin.manage_users') }}
+  </div>
+  
+</div>
+{% endblock %}

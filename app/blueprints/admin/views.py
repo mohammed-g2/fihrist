@@ -2,11 +2,13 @@ from flask import render_template, redirect, url_for, request, current_app, flas
 from flask_login import login_required, current_user
 from flask_babel import _
 from app.models import Comment, Post, User, Category
-from app.services import BlogService
+from app.services import BlogService, AdminService
 from app.utils import paginate
 from app.utils.decorators import admin_required, mod_required
 from . import admin_bp
-from .forms import IDVerificationForm, CreateCategoryForm, EditCategoryForm
+from .forms import (
+  IDVerificationForm, CreateCategoryForm, EditCategoryForm,
+  EditUserForm)
 
 
 @admin_bp.route('/moderator-dashboard')
@@ -142,3 +144,52 @@ def manage_categories():
     delete_category_form=delete_category_form,
     edit_category_form=edit_category_form)
 
+
+@admin_bp.route('/manage-users')
+@login_required
+@admin_required
+def manage_users():
+  page = request.args.get('page', 1, type=int)
+  p = paginate(User.query, User, page)
+  
+  return render_template(
+    'admin/list-users.html', pagination=p['pagination'], users=p['items'])
+
+
+@admin_bp.route('/edit-user/<int:id>', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def edit_user(id):
+  user = User.query.get_or_404(id)
+  edit_user_form = EditUserForm(prefix='edit-user')
+  delete_user_form = IDVerificationForm(prefix='delete-user')
+  
+  if request.method == 'POST':
+    srv = AdminService
+    if edit_user_form.submit.data and edit_user_form.validate():
+      try:
+        srv.edit_user(
+          user=user, 
+          confirmed=edit_user_form.confirmed.data,
+          role_id=edit_user_form.role.data)
+        flash(_('User edited'), category='success')
+      except ValueError:
+        flash(_('Role does not exist'))
+      except Exception as e:
+        current_app.logger.exception(e)
+        flash(_('Something went wrong, please try again later'), category='warning')
+    if delete_user_form.submit.data and delete_user_form.validate():
+      try:
+        srv.delete_user(user=user)
+        flash(_('User deleted'), category='warning')
+      except Exception as e:
+        current_app.logger.exception(e)
+        flash(_('Something went wrong, please try again later'), category='warning')
+    return redirect(url_for('admin.manage_users'))
+  
+  edit_user_form.role.data = user.role.id
+  edit_user_form.confirmed.data = user.confirmed
+  
+  return render_template(
+    'admin/edit-user.html', user=user,
+    edit_user_form=edit_user_form, delete_user_form=delete_user_form)
