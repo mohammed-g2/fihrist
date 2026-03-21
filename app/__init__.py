@@ -32,7 +32,7 @@ def create_app(config_name: str) -> Flask:
   
   with app.app_context():
     from app.models import (
-      User, Role, Permission, Blog, Post, Comment, Category)
+      User, Role, Permission, Blog, Post, Comment, Category, PostImage)
   
   @app.context_processor
   def create_template_context():

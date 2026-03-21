@@ -21,6 +21,7 @@ class Post(db.Model):
   blog = db.relationship('Blog', back_populates='posts')
   user = db.relationship('User', back_populates='posts')
   comments = db.relationship('Comment', back_populates='post', lazy='dynamic')
+  images = db.relationship('PostImage', back_populates='post', lazy='dynamic')
   
   def __repr__(self):
     return f'<Post { self.title }>'

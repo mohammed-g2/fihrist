@@ -22,6 +22,7 @@ class User(db.Model, UserMixin):
   blog = db.relationship('Blog', back_populates='user', uselist=False)
   posts = db.relationship('Post', back_populates='user', lazy='dynamic')
   comments = db.relationship('Comment', back_populates='user', lazy='dynamic')
+  post_images = db.relationship('PostImage', back_populates='user', lazy='dynamic')
   
   def __repr__(self):
     return f'<User { self.username }>'
