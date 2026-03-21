@@ -23,6 +23,8 @@ def init_cli(app: Flask) -> None:
     from config import basedir
     os.makedirs(os.path.join(basedir, 'data'), exist_ok=True)
     click.echo('> Created data directory.')
+    os.makedirs(os.path.join(basedir, 'app', 'static', 'uploads'), exist_ok=True)
+    click.echo('> Created uploads directory.')
     os.makedirs(os.path.join(basedir, 'tmp'), exist_ok=True)
     click.echo('> Created temporary directory.')
   

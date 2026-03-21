@@ -89,7 +89,8 @@ def create_post():
         title=form.title.data,
         content=form.content.data or '',
         category=category,
-        status='draft')
+        status='draft',
+        image=form.image.data)
       flash(_('Post Saved.'), category='success')
       return redirect(url_for('blog.workspace'))
     except ValueError:
@@ -99,6 +100,9 @@ def create_post():
     except Exception as e:
       current_app.logger.exception(e)
       flash(_('Something went wrong, please try again later'), category='warning')
+  else:
+    if form.image.errors:
+      flash(_('Image is larger than 2 MB'), category='warning')
 
   return render_template('blog/create-post.html', form=form)
 
@@ -118,10 +122,12 @@ def edit_post(id):
     category = Category.query.get_or_404(form.category.data)
     try:
       srv.update_post(
+        user=current_user._get_current_object(),
         post=post, 
         title=form.title.data, 
         category=category,
-        content=form.content.data or '')
+        content=form.content.data or '',
+        image=form.image.data)
       flash(_('Post Updated'), category='success')
       return redirect(url_for('blog.workspace'))
     except ValueError:
@@ -131,6 +137,9 @@ def edit_post(id):
     except Exception as e:
       current_app.logger.exception(e)
       flash(_('Something went wrong, please try again later'), category='warning')
+  else:
+    if form.image.errors:
+      flash(_('Image is larger than 2 MB'), category='warning')
   
   form.title.data = post.title
   form.content.data = post.content

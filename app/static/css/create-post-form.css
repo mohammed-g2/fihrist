@@ -11,3 +11,18 @@
 #content {
   resize: none;
 }
+
+#preview {
+  background-color: #D3D3D3;
+  width: 100%;
+  height: 600px;
+  position: relative;
+  object-fit: fill;
+  background-size: cover;
+}
+
+#upload-image {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}

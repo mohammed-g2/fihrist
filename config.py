@@ -25,6 +25,10 @@ class Config:
   MAIL_SENDER = 'Fihrist Admin <Ghusn@email.com>'
   # Database config
   SQLALCHEMY_TRACK_MODIFICATIONS = False
+  # Image upload
+  UPLOAD_FOLDER = os.path.join(basedir, 'app', 'static', 'uploads')
+  ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg']
+  MAX_CONTENT_LENGTH = 10 * 1024 * 1024 # 4MB
   
   @staticmethod
   def init_app(app: Flask) -> None:

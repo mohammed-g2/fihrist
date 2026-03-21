@@ -27,14 +27,33 @@
       ev.formData.append('content', quill.root.innerHTML);
     });
   </script>
+  <script>
+    let imageInput = document.getElementById('image');
+    let imagePreview = document.getElementById('preview');
+    
+    imageInput.addEventListener('change', ev => {
+      let file = ev.target.files[0];
+      if (file) {
+        const objectURL = URL.createObjectURL(file);
+        imagePreview.style.backgroundImage = `url(${objectURL})`;
+      }
+      
+    });
+  </script>
 {% endblock %}
 
 {% block content %}
 <div class="container-fluid m-0 p-0 h-100">
 <div class="row h-100">
   <div class="col-12 h-100">
-    <form method="post" class="h-100" id="create-post">
+    <form method="post" enctype="multipart/form-data" class="h-100" id="create-post">
       {{ form.hidden_tag() }}
+      
+      <div id="preview">
+        <div id="upload-image">
+          {{ form.image(accept='image/*', class='form-control rounded-0') }}
+        </div>
+      </div>
 
       <div>
         {{ form.title(class='form-control', id='title', placeholder=form.title.label.text) }}

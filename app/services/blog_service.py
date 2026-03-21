@@ -1,7 +1,12 @@
+import os
 import re
+import string
+import random
 from datetime import datetime
+from werkzeug.utils import secure_filename
+from flask import current_app, url_for
 from app.ext import db
-from app.models import User, Blog, Post, Comment, Category
+from app.models import User, Blog, Post, Comment, Category, PostImage
 from app.errors import DatabaseCommitError, InvalidBlogName, InvalidPostTitle
 
  
@@ -36,7 +41,44 @@ class BlogService:
     return True
   
   @classmethod
-  def create_post(cls, user: User, title: str, content: str, status: str, category: Category) -> bool:
+  def save_post_image(cls, image, user, post):
+    allowed_ext = current_app.config['ALLOWED_EXTENSIONS']
+    uploads_dir = current_app.config['UPLOAD_FOLDER']
+    code = ''.join(random.choices(string.ascii_letters, k=4))
+    filename = f'{ user.username }-{ code }-{secure_filename(image.filename)}'
+    image_path = os.path.join(uploads_dir, filename)
+    url = url_for('static', filename=f'uploads/{ filename }')
+    
+    if not '.' in filename or not filename.rsplit('.', 1)[1].lower() in allowed_ext:
+      raise ValueError('Wrong image extension')
+    
+    all_images = post.images.all()
+    if all_images != []:
+      previous_image = all_images[0]
+      if previous_image.url == url:
+        return
+      os.remove(post.images.all()[0].path)
+      db.session.delete(previous_image)
+      db.session.commit()
+    
+    image.save(image_path)
+    
+    post_image = PostImage(
+      url=url,
+      path=image_path,
+      order=1,
+      user=user,
+      post=post)
+    db.session.add(post_image)
+    try:
+      db.session.commit()
+    except Exception as e:
+      db.session.rollback()
+      raise DatabaseCommitError(e)
+    return True
+
+  @classmethod
+  def create_post(cls, user: User, title: str, content: str, status: str, category: Category, image) -> bool:
     """
     Create post
     
@@ -72,10 +114,13 @@ class BlogService:
       db.session.rollback()
       raise DatabaseCommitError(e)
     
+    if image.filename:
+      cls.save_post_image(image, user, post)
+
     return True
   
   @classmethod
-  def update_post(cls, post: Post, title: str, content: str, category: Category) -> bool:
+  def update_post(cls, user: User, post: Post, title: str, content: str, category: Category, image) -> bool:
     """
     Update given post
     
@@ -109,6 +154,9 @@ class BlogService:
     except Exception as e:
       db.session.rollback()
       raise DatabaseCommitError(e)
+    
+    if image.filename:
+      cls.save_post_image(image, user, post)
     
     return True
     
