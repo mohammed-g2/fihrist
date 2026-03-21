@@ -94,4 +94,4 @@ npm-debug.log*
 data/
 tmp/
 notes/
-static/uploads/
+app/static/uploads/
