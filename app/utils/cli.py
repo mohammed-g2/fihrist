@@ -153,7 +153,9 @@ def create_shell_context(app: Flask) -> None:
   def shell_context():
     from app.ext import db
     from app.models import (
-      User, Role, Permission, Blog, Post, Comment, Category, PostImage)
+      User, Role, Permission, Blog, Post, Comment, Category, PostImage,
+      Message, Conversation, participants)
     return dict(
       db=db, User=User, Role=Role, Permission=Permission, Blog=Blog,
-      Post=Post, Comment=Comment, Category=Category, PostImage=PostImage)
+      Post=Post, Comment=Comment, Category=Category, PostImage=PostImage,
+      Message=Message, Conversation=Conversation, participants=participants)

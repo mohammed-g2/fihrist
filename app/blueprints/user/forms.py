@@ -1,5 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import EmailField, StringField, PasswordField, SubmitField, TextAreaField
+from wtforms import (
+  EmailField, StringField, PasswordField, SubmitField, TextAreaField,
+  HiddenField)
 from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
 from flask_babel import lazy_gettext as _l
 
@@ -26,3 +28,9 @@ class UpdateEmailForm(FlaskForm):
 class VerifyUserPasswordForm(FlaskForm):
   password = PasswordField(_l('Current Password'), validators=[DataRequired(), Length(min=6)])
   submit_password = SubmitField(_l('Submit'))
+
+
+class SendMessageForm(FlaskForm):
+  recipient = HiddenField('to', validators=[DataRequired()])
+  content = TextAreaField(_l('Content'), validators=[DataRequired(), Length(max=128)])
+  submit = SubmitField(_l('Send'))

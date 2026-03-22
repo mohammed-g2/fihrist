@@ -5,6 +5,8 @@ from flask import request
 from flask_login import UserMixin
 from app.ext import db
 from .permission import Permission
+from .message import Message
+from .participants import participants
 
 class User(db.Model, UserMixin):
   __tablename__ = 'users'
@@ -23,6 +25,12 @@ class User(db.Model, UserMixin):
   posts = db.relationship('Post', back_populates='user', lazy='dynamic')
   comments = db.relationship('Comment', back_populates='user', lazy='dynamic')
   post_images = db.relationship('PostImage', back_populates='user', lazy='dynamic')
+  sent_messages = db.relationship(
+    'Message', back_populates='sender', lazy='dynamic', foreign_keys='Message.sender_id')
+  received_messages = db.relationship(
+    'Message', back_populates='recipient', lazy='dynamic', foreign_keys='Message.sender_id')
+  conversations = db.relationship(
+    'Conversation', secondary=participants, back_populates='members')
   
   def __repr__(self):
     return f'<User { self.username }>'
@@ -73,3 +81,7 @@ class User(db.Model, UserMixin):
       url = 'http://www.gravatar.com/avatar'
     
     return f'{url}/{self.avatar_hash}?s={size}&d={generator}&r={rating}'
+  
+  def has_unread_messages(self) -> bool:
+    found_unread_msg = Message.query.filter_by(recipient_id=self.id, is_read=False).first()
+    return found_unread_msg is not None

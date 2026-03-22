@@ -1,6 +1,7 @@
 from datetime import datetime
+from sqlalchemy import and_
 from app.ext import db
-from app.models import User
+from app.models import User, Message, Conversation
 from app.models.value_objects import Username, Email, Password
 from app.utils.security import decode_timed_token
 from app.errors import (
@@ -172,3 +173,48 @@ class UserService:
     except Exception as e:
       db.session.rollback()
       raise DatabaseCommitError(e)
+  
+  @classmethod
+  def send_message(cls, sender: User, recipient: User, content: str) -> bool:
+    """"""
+    conversation = Conversation.query.filter(
+      and_(
+        Conversation.members.contains(sender),
+        Conversation.members.contains(recipient))).first()
+    
+    if not conversation:
+      conversation = Conversation()
+      conversation.members.append(sender)
+      conversation.members.append(recipient)
+      db.session.add(conversation)
+      try:
+        db.session.commit()
+      except Exception as e:
+        db.session.rollback()
+        raise DatabaseCommitError(e)
+    
+    message = Message(
+      sender=sender, 
+      recipient=recipient, 
+      content=content, 
+      conversation=conversation)
+    db.session.add(message)
+    try:
+      db.session.commit()
+    except Exception as e:
+      db.session.rollback()
+      raise DatabaseCommitError(e)
+  
+  @classmethod
+  def mark_as_read(cls, user:User, conversation: Conversation):
+    """"""
+    for message in conversation.messages:
+      if message.recipient_id == user.id:
+        message.is_read = True
+        db.session.add(message)
+    try:
+      db.session.commit()
+    except Exception as e:
+      db.session.rollback()
+      raise DatabaseCommitError(e)
+

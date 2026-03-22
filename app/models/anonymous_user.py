@@ -10,3 +10,6 @@ class AnonymousUser(AnonymousUserMixin):
   
   def is_mod(self) -> bool:
     return False
+  
+  def has_unread_messages(self) -> bool:
+    return False

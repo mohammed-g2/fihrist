@@ -28,7 +28,8 @@ def create_app(config_name: str) -> Flask:
 
   with app.app_context():
     from app.models import (
-      User, Role, Permission, Blog, Post, Comment, Category, PostImage)
+      User, Role, Permission, Blog, Post, Comment, Category, PostImage,
+      Message, Conversation, participants)
   
   @app.context_processor
   def create_template_context():

@@ -7,3 +7,6 @@ from .post import Post
 from .comment import Comment
 from .category import Category
 from .post_image import PostImage
+from .message import Message
+from .conversation import Conversation
+from .participants import participants

@@ -1,9 +1,11 @@
 from flask import render_template, request, redirect, url_for, flash, current_app
+from sqlalchemy import or_, and_
 from flask_login import login_required, current_user
 from flask_babel import _
-from app.models import User, Post
+from app.models import User, Post, Permission, Message, Conversation
 from app.services import UserService
 from app.utils import paginate
+from app.utils.decorators import permission_required
 from app.errors import (
   InvalidUsernameError, UsernameAlreadyExistsError, TokenError,
   EmailAlreadyExistsError, InvalidEmailError, PasswordValidationError,
@@ -11,7 +13,7 @@ from app.errors import (
 from . import user_bp
 from .forms import (
   ChangePasswordForm, UpdateUserProfileForm, UpdateEmailForm,
-  VerifyUserPasswordForm)
+  VerifyUserPasswordForm, SendMessageForm)
 
 
 def profile_form_handler(form):
@@ -139,3 +141,72 @@ def profile(username):
   p = paginate(user.posts.filter_by(status='published'), Post, page)
   return render_template(
     'user/profile.html', user=user, posts=p['items'], pagination=p['pagination'])
+
+
+@user_bp.route('/send-message/<to>', methods=['GET', 'POST'])
+@login_required
+@permission_required(Permission.WRITE)
+def send_message(to):
+  form = SendMessageForm()
+  srv = UserService
+  
+  if current_user.username == to:
+    return redirect(url_for('main.index'))
+  
+  recipient = User.query.filter_by(username=to).first_or_404()
+  
+  messages = None
+  conversation = Conversation.query.filter(
+    and_(
+      Conversation.members.contains(current_user._get_current_object()),
+      Conversation.members.contains(recipient))).first()
+  if conversation:
+    messages = conversation.messages
+  
+  try:
+    srv.mark_as_read(current_user._get_current_object(), conversation)
+  except Exception as e:
+    current_app.logger.exception(e)
+  
+  if form.validate_on_submit():
+    try:
+      srv.send_message(
+        sender=current_user._get_current_object(),
+        recipient=recipient,
+        content=form.content.data)
+      
+      flash(_('Message Sent'), category='success')
+      return redirect(url_for('user.send_message', to=to))
+    except Exception as e:
+      current_app.logger.exception(e)
+      flash(_('Something went wrong, please try again later'), category='warning')
+  return render_template(
+    'user/send-message.html', user=recipient, form=form, messages=messages)
+
+
+@user_bp.route('/messages')
+@login_required
+def view_messages():
+  conversations = Conversation.query.filter(
+    Conversation.members.contains(current_user._get_current_object())).all()
+  all_conv = []
+  
+  for conv in conversations:
+    c = {
+      'recipient': None,
+      'is_read': True,
+      'conv': conv
+    }
+    
+    for member in conv.members:
+      if member.id != current_user.id:
+        c['recipient'] = member
+    
+    for msg in conv.messages:
+      if msg.is_read == False and msg.sender_id != current_user.id:
+        c['is_read'] = False
+
+    all_conv.append(c)
+  
+  return render_template(
+    'user/messages.html', conversations=all_conv)
