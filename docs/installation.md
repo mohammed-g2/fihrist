@@ -35,5 +35,6 @@ flask translate compile
 
 ### Testing
 - Running test suits `flask test`, default to in memory database for testing
+- To get test coverage reports `flask test --coverage`, reports at `tmp/coverage/`
 - Create fake data `flask fake-data`
 - Running testing email server `python app/scripts/mail_server.py`

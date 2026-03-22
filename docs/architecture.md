@@ -10,26 +10,26 @@ Stack:
 
 
 # Request Flow
-`
-HTTP Request\
-a browser or another client sends an HTTP request to the application\
-   |\
-Flask\
+```
+HTTP Request
+a browser or another client sends an HTTP request to the application
+   |
+Flask
 the flask framework receives the request and routes it to the
-dedicated view function\
-   |\
-View Function\
+dedicated view function
+   |
+View Function
 handles the incoming request, might have conditional for handling
-submitted forms or GET/POST requests, handles exceptions thrown\
-   |\
-Service Layer\
+submitted forms or GET/POST requests, handles exceptions thrown
+   |
+Service Layer
 the application logic, all operations that require the collaboration
 of multiple models or logic heavy or operations that require
-external dependencies goes here\
-   |\
-Database ORM\
+external dependencies goes here
+   |
+Database ORM
 responsible for querying database, database models should be thin, 
-and should only contain operations that are tightly related to the model\
-   |\
-Database\
-`
+and should only contain operations that are tightly related to the model
+   |
+Database
+```

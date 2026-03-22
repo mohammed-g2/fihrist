@@ -10,16 +10,14 @@ with unique configurations.
 
 ## Architecture
 - [architecture details](docs/architecture.md)
-- [decision record](docs/decisions.md)
 - [database models](docs/database.md)
 - [routes](docs/routes.md)
-- [API](docs/api.md)
 
 ## features & future improvements
 - [features list & website pages](docs/overview.md)
 
 ## installation
-- [installation process](docs/installation.md)
+- [installation & testing](docs/installation.md)
 
 ## screenshots
 

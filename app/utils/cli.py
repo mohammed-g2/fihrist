@@ -3,7 +3,7 @@ import click
 from flask import Flask
 
 
-def init_cli(app: Flask) -> None:
+def init_cli(app: Flask, COV) -> None:
   """
   Initialize cli, commands added:
   - <init> initialize the application
@@ -12,6 +12,33 @@ def init_cli(app: Flask) -> None:
   
   :param app: application instance
   """
+  
+  @app.cli.command()
+  @click.option('--coverage/--no-coverage', default=False, 
+                help='Run tests under code coverage.')
+  def test(coverage):
+    """Run unit tests."""
+    from config import basedir
+    # recursively restart the script
+    if coverage and not os.environ.get('COVERAGE'):
+      import subprocess
+      import sys
+      click.echo('> Restarting...')
+      os.environ['COVERAGE'] = '1'
+      sys.exit(subprocess.call(sys.argv))
+    
+    import unittest
+    tests = unittest.TestLoader().discover('tests')
+    unittest.TextTestRunner(verbosity=2).run(tests)
+    if COV:
+        COV.stop()
+        COV.save()
+        click.echo('Coverage Summary:')
+        COV.report()
+        covdir = os.path.join(basedir, 'tmp/coverage')
+        COV.html_report(directory=covdir)
+        click.echo(f'HTML version: file://{ covdir }/index.html')
+        COV.erase()
   
   @app.cli.group()
   def init():
@@ -77,13 +104,6 @@ def init_cli(app: Flask) -> None:
     
     create_comments(count)
     click.echo(f'> Create comments, count { count }')
-  
-  @app.cli.command()
-  def test():
-    """Run unit tests."""
-    import unittest
-    tests = unittest.TestLoader().discover('tests')
-    unittest.TextTestRunner(verbosity=2).run(tests)
   
   @app.cli.group()
   def translate():

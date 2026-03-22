@@ -21,5 +21,6 @@ dependencies = [
 [dependency-groups]
 dev = [
     "aiosmtpd>=1.4.6",
+    "coverage>=7.6.1",
     "faker>=35.2.2",
 ]
