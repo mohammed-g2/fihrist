@@ -39,7 +39,7 @@ def init_cli(app: Flask, COV) -> None:
         COV.html_report(directory=covdir)
         click.echo(f'HTML version: file://{ covdir }/index.html')
         COV.erase()
-  
+
   @app.cli.group()
   def init():
     """Initialize the application."""
@@ -136,6 +136,15 @@ def init_cli(app: Flask, COV) -> None:
     if os.system('pybabel compile -d app/translations'):
       raise RuntimeError('Compiling language failed.')
     click.echo('> Translation compiled.')
+  
+  @app.cli.command()
+  def deploy():
+    """Run deployment tasks."""
+    from flask_migrate import upgrade
+    upgrade()
+    dirs.callback()
+    roles.callback()
+    compile.callback()
 
 
 def create_shell_context(app: Flask) -> None:

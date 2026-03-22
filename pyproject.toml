@@ -13,6 +13,7 @@ dependencies = [
     "flask-mail>=0.10.0",
     "flask-migrate>=4.1.0",
     "flask-sqlalchemy>=3.1.1",
+    "flask-sslify>=0.1.5",
     "flask-wtf>=1.2.1",
     "pyjwt>=2.9.0",
     "python-dotenv>=1.0.1",
@@ -23,4 +24,5 @@ dev = [
     "aiosmtpd>=1.4.6",
     "coverage>=7.6.1",
     "faker>=35.2.2",
+    "snakeviz>=2.2.1",
 ]

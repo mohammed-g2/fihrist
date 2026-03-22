@@ -1,11 +1,6 @@
 import os
-import sys
-import click
 from dotenv import load_dotenv
-from app import create_app
-from app.utils.cli import init_cli, create_shell_context
 from config import basedir
-
 
 load_dotenv(os.path.join(basedir, '.env'))
 
@@ -15,7 +10,12 @@ if os.environ.get('COVERAGE'):
   COV = coverage.coverage(branch=True, include='app/*')
   COV.start()
 
-app = create_app('development')
+from app import create_app
+from app.ext import migrate, db
+from app.utils.cli import create_shell_context, init_cli
+
+app = create_app(os.environ.get('ENV'))
+migrate.init_app(app, db)
 
 init_cli(app, COV)
 create_shell_context(app)

@@ -13,9 +13,12 @@
       <h3>{{ post.title }}</h3>
       <div>
         
-        <div style="width:100%; height:600px;">
-          <img style="width: 100%; height:100%; object-fit:cover;" src="{{ post.images.all()[0].url }}">
-        </div>
+        {% set post_images = post.images.all() %}
+        {% if post_images != [] %}
+          <div style="width:100%; height:600px;">
+            <img style="width: 100%; height:100%; object-fit:cover;" src="{{ post_images[0].url }}">
+          </div>
+        {% endif %}
         
         <p class="mb-0 mt-3 fw-bold">
           {{ _('Category') }}: 
