@@ -68,7 +68,8 @@ def init_cli(app: Flask, COV) -> None:
       click.echo('> Failed to create roles.')
   
   @app.cli.command()
-  def fake_data():
+  @click.option('--count', default=100, help='entries count')
+  def fake_data(count):
     """Populate the database with fake data."""
     from app.ext import db
     from app.models import Role
@@ -76,8 +77,6 @@ def init_cli(app: Flask, COV) -> None:
     from app.scripts.fake_data import (
       create_users, create_blogs, create_posts, create_categories,
       create_comments)
-    
-    count = 100
     
     if app.config['ENV'] != 'development':
       click.echo('> Not in development environment.')
@@ -158,4 +157,5 @@ def create_shell_context(app: Flask) -> None:
     return dict(
       db=db, User=User, Role=Role, Permission=Permission, Blog=Blog,
       Post=Post, Comment=Comment, Category=Category, PostImage=PostImage,
-      Message=Message, Conversation=Conversation, participants=participants)
+      Message=Message, Conversation=Conversation, participants=participants,
+      Follow=Follow)

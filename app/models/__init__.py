@@ -1,4 +1,4 @@
-from .user import User
+from .user import User, Follow
 from .anonymous_user import AnonymousUser
 from .role import Role
 from .permission import Permission

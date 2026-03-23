@@ -8,6 +8,14 @@ from .permission import Permission
 from .message import Message
 from .participants import participants
 
+
+class Follow(db.Model):
+  __tablename__ = 'follows'
+  follower_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+  followed_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+  created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
 class User(db.Model, UserMixin):
   __tablename__ = 'users'
   id = db.Column(db.Integer, primary_key=True)
@@ -31,6 +39,18 @@ class User(db.Model, UserMixin):
     'Message', back_populates='recipient', lazy='dynamic', foreign_keys='Message.sender_id')
   conversations = db.relationship(
     'Conversation', secondary=participants, back_populates='members')
+  followed = db.relationship(
+    'Follow',
+    foreign_keys=[Follow.follower_id], 
+    backref=db.backref('follower', lazy='joined'),
+    lazy='dynamic',
+    cascade='all, delete-orphan')
+  followers = db.relationship(
+    'Follow',
+    foreign_keys=[Follow.followed_id],
+    backref=db.backref('followed', lazy='joined'),
+    lazy='dynamic',
+    cascade='all, delete-orphan')
   
   def __repr__(self):
     return f'<User { self.username }>'
@@ -85,3 +105,23 @@ class User(db.Model, UserMixin):
   def has_unread_messages(self) -> bool:
     found_unread_msg = Message.query.filter_by(recipient_id=self.id, is_read=False).first()
     return found_unread_msg is not None
+  
+  def follow(self, user: 'User') -> None:
+    if not self.is_following(user):
+      f = Follow(follower=self, followed=user)
+      db.session.add(f)
+  
+  def unfollow(self, user: 'User') -> None:
+    f = self.followed.filter_by(followed_id=user.id).first()
+    if f:
+      db.session.delete(f)
+  
+  def is_following(self, user: 'User') -> bool:
+    if user.id is None:
+      return False
+    return self.followed.filter_by(followed_id=user.id).first() is not None
+  
+  def is_followed_by(self, user: 'User') -> bool:
+    if user.id is None:
+      return False
+    return self.followers.filter_by(follower_id=user.id).first() is not None

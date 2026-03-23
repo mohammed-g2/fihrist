@@ -2,7 +2,9 @@ from flask import render_template, request, redirect, url_for, flash, current_ap
 from sqlalchemy import or_, and_
 from flask_login import login_required, current_user
 from flask_babel import _
-from app.models import User, Post, Permission, Message, Conversation
+from app.ext import db
+from app.models import (
+  User, Post, Permission, Message, Conversation, Follow, Category)
 from app.services import UserService
 from app.utils import paginate
 from app.utils.decorators import permission_required
@@ -13,7 +15,7 @@ from app.errors import (
 from . import user_bp
 from .forms import (
   ChangePasswordForm, UpdateUserProfileForm, UpdateEmailForm,
-  VerifyUserPasswordForm, SendMessageForm)
+  VerifyUserPasswordForm, SendMessageForm, IDVerificationForm)
 
 
 def profile_form_handler(form):
@@ -139,8 +141,10 @@ def profile(username):
   user = User.query.filter_by(username=username).first_or_404()
   page = request.args.get('page', 1, type=int)
   p = paginate(user.posts.filter_by(status='published'), Post, page)
+  form = IDVerificationForm()
   return render_template(
-    'user/profile.html', user=user, posts=p['items'], pagination=p['pagination'])
+    'user/profile.html', user=user, posts=p['items'], pagination=p['pagination'],
+    form=form)
 
 
 @user_bp.route('/send-message/<to>', methods=['GET', 'POST'])
@@ -210,3 +214,53 @@ def view_messages():
   
   return render_template(
     'user/messages.html', conversations=all_conv)
+
+
+@user_bp.route('/follow/<username>', methods=['POST'])
+@login_required
+@permission_required(Permission.FOLLOW)
+def follow(username):
+  user = User.query.filter_by(username=username).first_or_404()
+  form = IDVerificationForm(request.form)
+  if form.validate_on_submit():
+    try:
+      current_user.follow(user)
+      db.session.commit()
+    except Exception as e:
+      current_app.logger.exception(e)
+      flash(_('Something went wrong, please try again later'), category='warning')
+  return redirect(url_for('user.profile', username=username))
+
+
+@user_bp.route('/unfollow/<username>', methods=['POST'])
+@login_required
+def unfollow(username):
+  user = User.query.filter_by(username=username).first_or_404()
+  form = IDVerificationForm(request.form)
+  if form.validate_on_submit():
+    try:
+      current_user.unfollow(user)
+      db.session.commit()
+    except Exception as e:
+      current_app.logger.exception(e)
+      flash(_('Something went wrong, please try again later'), category='warning')
+  return redirect(url_for('user.profile', username=username))
+
+
+@user_bp.route('/feed')
+@login_required
+def feed():
+  page = request.args.get('page', 1, type=int)
+  pagination = db.session.query(Post)\
+    .select_from(Follow)\
+    .filter_by(follower_id=current_user.id)\
+    .join(Post, Follow.followed_id == Post.user_id)\
+    .order_by(Post.created_at.desc())\
+    .paginate(page=page, per_page=current_app.config['ITEMS_PER_PAGE'], error_out=False)
+  posts = pagination.items
+  categories = Category.query.all()
+  endpoint = 'user.feed'
+  
+  return render_template(
+    'index.html', posts=posts, pagination=pagination, categories=categories,
+    endpoint=endpoint)

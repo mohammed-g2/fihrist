@@ -82,6 +82,8 @@
       {{ pagination_widget(pagination=pagination, endpoint=endpoint) }}
     {% elif endpoint == 'main.get_by_category' %}
       {{ pagination_widget(pagination=pagination, endpoint=endpoint, slug=current_category.slug) }}
+    {% elif endpoint == 'user.feed' %}
+      {{ pagination_widget(pagination=pagination, endpoint=endpoint) }}
     {% endif %}
   </div>
 </div>

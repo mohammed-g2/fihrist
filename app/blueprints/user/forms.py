@@ -34,3 +34,8 @@ class SendMessageForm(FlaskForm):
   recipient = HiddenField('to', validators=[DataRequired()])
   content = TextAreaField(_l('Content'), validators=[DataRequired(), Length(max=128)])
   submit = SubmitField(_l('Send'))
+
+
+class IDVerificationForm(FlaskForm):
+  id = HiddenField('id', validators=[DataRequired()])
+  submit = SubmitField(_l('Verify'))

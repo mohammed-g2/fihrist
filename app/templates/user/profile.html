@@ -15,6 +15,23 @@
           {{ _('Chat') }} <i class="bi bi-envelope icon fs-5"></i> 
         </a>
       </p>
+      <div>
+        {% if current_user.id != user.id and current_user.can(Permission.FOLLOW) %}
+          {% if not current_user.is_following(user) %}
+            <form method="post" action="{{ url_for('user.follow', username=user.username) }}">
+              {{ form.csrf_token }}
+              {{ form.id(value=user.id) }}
+              {{ form.submit(value='Follow', class='btn btn-alert mb-2') }}
+            </form>
+          {% else %}
+            <form method="post" action="{{ url_for('user.unfollow', username=user.username) }}">
+              {{ form.csrf_token }}
+              {{ form.id(value=user.id) }}
+              {{ form.submit(value='Unfollow', class='btn btn-alert mb-2') }}
+            </form>
+          {% endif %}
+        {% endif %}
+      </div>
       {% endif %}
       <p class="m-0">{{ _('member since') }}: <span class="time">{{ user.created_at }}</span></p>
       <p class="m-0">{{ _('last seen') }}: <span class="time">{{ user.last_seen }}</span></p>
